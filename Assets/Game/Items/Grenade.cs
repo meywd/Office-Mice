@@ -20,12 +20,12 @@ namespace Assets.Game.Items
         void OnEnable()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
-            _rigidbody.velocity = transform.right * Speed;
+            _rigidbody.linearVelocity = transform.right * Speed;
         }
 
         private void Update()
         {
-            if (_rigidbody.velocity.magnitude < 1f)
+            if (_rigidbody.linearVelocity.magnitude < 1f)
             {
                 gameObject.SetActive(false);
             }

@@ -104,12 +104,12 @@ public class Mouse : Enemy
 
         if (_beenHit || _playerInSight || _targetPlayer)
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             agent.speed = System.Math.Min(Speed, RushIncrement);
         }
         else
         {
-            rb.velocity = _direction * System.Math.Min(Speed, RushIncrement);
+            rb.linearVelocity = _direction * System.Math.Min(Speed, RushIncrement);
             agent.speed = 0;
         }
     }
@@ -118,7 +118,7 @@ public class Mouse : Enemy
     {
         if (Shot != null) Shot.Play();
         Health -= damage;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         agent.speed = 0;
 
         if (Health <= 0)
