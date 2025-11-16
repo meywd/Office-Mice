@@ -1,0 +1,72 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Cache Unity Library folder
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Free up disk space (Unity builds need lots of space)
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      # Build Unity WebGL
+      - name: Build Unity WebGL
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          targetPlatform: WebGL
+          unityVersion: 6000.0.12f1  # Unity 6.0 LTS
+          buildName: office-mice
+          buildsPath: build
+          # Compression settings for smaller builds
+          customParameters: -compressedCompressionFormat Brotli
+
+      # List build contents for debugging
+      - name: List Build Contents
+        run: |
+          echo "Build directory contents:"
+          ls -lah build/WebGL/office-mice/
+
+      # Deploy to Cloudflare Workers
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      # Output deployment URL
+      - name: Output Deployment URL
+        run: |
+          echo "🚀 Deployment successful!"
+          echo "Your game is live at: https://office-mice.pages.dev"
+          echo "Or your custom Workers URL based on wrangler.toml"

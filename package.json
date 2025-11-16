@@ -1,0 +1,22 @@
+{
+  "name": "office-mice",
+  "version": "1.0.0",
+  "description": "Office-Mice - 2D Wave-Based Shooter Game",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "build": "echo 'Build Unity WebGL in Unity Editor first'"
+  },
+  "keywords": [
+    "unity",
+    "webgl",
+    "game",
+    "cloudflare-workers"
+  ],
+  "author": "FD Studios",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
