@@ -1,0 +1,22 @@
+{
+    "name": "MapGeneration.PlayMode.Tests",
+    "rootNamespace": "OfficeMice.MapGeneration.PlayMode.Tests",
+    "references": [
+        "Unity.TestRunner",
+        "UnityEditor.TestRunner",
+        "MapGeneration"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

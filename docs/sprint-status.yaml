@@ -19,7 +19,7 @@ development_status:
   1-5-performance-benchmarking: done
   
   # Epic 2: Core Generation Engine
-  2-1-bsp-algorithm: drafted
+  2-1-bsp-algorithm: in-progress
   2-2-room-classification: drafted
   2-3-astar-pathfinding: drafted
   2-4-two-pass-corridors: drafted

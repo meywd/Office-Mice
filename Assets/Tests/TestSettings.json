@@ -1,0 +1,69 @@
+{
+  "name": "MapGeneration Test Settings",
+  "testMode": "All",
+  "assemblySettings": {
+    "includeAssemblies": [
+      "MapGeneration.EditMode.Tests",
+      "MapGeneration.PlayMode.Tests"
+    ],
+    "excludeAssemblies": [],
+    "assemblyFilters": [
+      "+OfficeMice.MapGeneration*",
+      "-Unity*",
+      "-UnityEngine*",
+      "-UnityEditor*",
+      "-mscorlib*",
+      "-System*"
+    ]
+  },
+  "coverageSettings": {
+    "generateHtmlReport": true,
+    "generateAdditionalMetrics": true,
+    "generateBadgeReport": true,
+    "generateHistoryReport": true,
+    "pathToHtmlReport": "CoverageReport",
+    "pathToBadgeReport": "CoverageBadge",
+    "pathToHistoryReport": "CoverageHistory",
+    "minimumCoveragePercentage": 90,
+    "coverageFormats": [
+      "Html",
+      "Cobertura",
+      "JsonSummary",
+      "LCov"
+    ],
+    "includeTestAssemblies": true,
+    "generateAdditionalReports": {
+      "generateBranchReport": true,
+      "generateFunctionReport": true,
+      "generateRiskHotspotsReport": true
+    }
+  },
+  "performanceSettings": {
+    "enablePerformanceTests": true,
+    "maxTestExecutionTime": 300,
+    "maxMemoryUsageMB": 512,
+    "performanceThresholds": {
+      "mapGeneration": 1000,
+      "roomGeneration": 500,
+      "pathfinding": 100,
+      "contentPopulation": 200,
+      "tileRendering": 300
+    }
+  },
+  "reportingSettings": {
+    "generateJUnitReport": true,
+    "generateNUnitReport": true,
+    "generateTestSummary": true,
+    "includePassedTests": true,
+    "includeFailedTests": true,
+    "includeSkippedTests": true,
+    "reportOutputPath": "TestReports"
+  },
+  "continuousIntegration": {
+    "failBuildOnTestFailure": true,
+    "failBuildOnCoverageThreshold": true,
+    "publishTestResults": true,
+    "publishCoverageReports": true,
+    "publishPerformanceMetrics": true
+  }
+}
