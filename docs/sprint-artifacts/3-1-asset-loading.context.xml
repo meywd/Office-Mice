@@ -1,0 +1,188 @@
+<story-context id="3-1-asset-loading" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Asset Loading and Management</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/3-1-asset-loading.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system</asA>
+    <iWant>efficient asset loading</iWant>
+    <soThat>generation is fast and memory usage is optimized</soThat>
+    <tasks>1. [ ] Create TileAssetLoader class
+2. [ ] Implement tile caching system
+3. [ ] Add tile categorization by type
+4. [ ] Create weighted random selection
+5. [ ] Implement memory monitoring
+6. [ ] Add asset preloading support
+7. [ ] Create asset loading performance tests</tasks>
+  </story>
+
+  <acceptanceCriteria>- **Given** map generation system needs to access game assets
+- **When** the asset loading system is used
+- **Then** TileAssetLoader with caching exists for 691 existing tiles
+- **And** tiles are grouped by type (floors, walls, decor) for organized access
+- **And** weighted random tile selection supports variety in generation
+- **And** memory-efficient tile management prevents excessive allocation
+- **And** cache hit rate exceeds 95% for repeated asset access</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Functional Requirements - FR4: Furniture and Decoration System</section>
+        <snippet>System must populate rooms with appropriate furniture and decorations. Room-type specific furniture placement. Integration with existing furniture prefabs. Collision detection prevents path blocking.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ARCHITECTURE.md</path>
+        <title>System Architecture</title>
+        <section>Interface Contracts - IAssetLoader</section>
+        <snippet>Asset loading and caching abstraction for map generation resources. Provides efficient loading and caching of tiles, prefabs, and other assets. Methods include LoadTile, LoadPrefab, PreloadAssets, ClearCache, GetCacheStats.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 3: Content & Asset Integration - Story 3.1</section>
+        <snippet>Implement TileAssetLoader with Dictionary-based caching. Create tile categorization system. Add weighted random selection algorithms. Monitor memory usage and optimize cache strategies.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Interfaces/IAssetLoader.cs</path>
+        <kind>interface</kind>
+        <symbol>IAssetLoader</symbol>
+        <lines>11-101</lines>
+        <reason>Core interface that TileAssetLoader must implement. Defines contract for asset loading, caching, and performance monitoring.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Configuration/TilesetConfiguration.cs</path>
+        <kind>class</kind>
+        <symbol>TilesetConfiguration</symbol>
+        <lines>13-296</lines>
+        <reason>ScriptableObject for organizing tiles by type with weights and variations. Provides GetTileForType and GetDecorativeTile methods for weighted selection.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Configuration/TilesetConfiguration.cs</path>
+        <kind>class</kind>
+        <symbol>TileMapping</symbol>
+        <lines>301-373</lines>
+        <reason>Maps tile types to actual tile assets with weights. GetRandomTile method implements weighted selection algorithm.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Configuration/TilesetConfiguration.cs</path>
+        <kind>class</kind>
+        <symbol>TileEntry</symbol>
+        <lines>378-403</lines>
+        <reason>Individual tile entry with weight and properties. Used for weighted random selection in tile mapping.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Tests/EditMode/MapGeneration/Mocks/MockAssetLoader.cs</path>
+        <kind>class</kind>
+        <symbol>MockAssetLoader</symbol>
+        <lines>13-50</lines>
+        <reason>Reference implementation for testing. Shows expected behavior and interface compliance.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Tests/EditMode/MapGeneration/Performance/PerformanceBenchmark.cs</path>
+        <kind>class</kind>
+        <symbol>PerformanceBenchmark</symbol>
+        <lines>270-289</lines>
+        <reason>Performance testing infrastructure with AssetLoading benchmark target (100ms max time, 20MB max memory, 20KB max GC pressure).</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <unity>
+        <package name="Unity.Tilemap" version="1.0.0"/>
+        <package name="Unity.PerformanceTesting" version="2.0.0"/>
+      </unity>
+      <project>
+        <asset type="TileBase" count="684">terrainTiles_retina_*.asset files in Assets/Game/Layout/Palette_Assets/</asset>
+        <asset type="ScriptableObject">TilesetConfiguration configuration assets</asset>
+        <asset type="TestFramework">Unity Test Framework with Performance Testing</asset>
+      </project>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance">Asset loading must complete within 100ms for typical tile sets (from PerformanceBenchmark.AssetLoading target)</constraint>
+    <constraint type="memory">Memory usage must stay under 20MB for asset loading operations</constraint>
+    <constraint type="caching">Cache hit rate must exceed 95% for repeated asset access</constraint>
+    <constraint type="interface">Must implement IAssetLoader interface completely</constraint>
+    <constraint type="tiles">Must handle 691 existing tile assets efficiently</constraint>
+    <constraint type="organization">Tiles must be grouped by type (floors, walls, decor) using TilesetConfiguration</constraint>
+    <constraint type="selection">Must support weighted random selection using TileMapping weights</constraint>
+    <constraint type="gc">GC pressure must stay under 20KB per frame during asset loading</constraint>
+    <constraint type="unity">Must use Unity's Resources system and/or AssetDatabase for loading</constraint>
+    <constraint type="testing">Must include performance tests using existing PerformanceBenchmark infrastructure</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="IAssetLoader" kind="C# Interface">
+      <signature>public interface IAssetLoader</signature>
+      <path>Assets/Scripts/MapGeneration/Interfaces/IAssetLoader.cs</path>
+      <methods>
+        <method name="LoadTile">TileBase LoadTile(string tileName)</method>
+        <method name="LoadPrefab">GameObject LoadPrefab(string prefabName)</method>
+        <method name="LoadScriptableObject">T LoadScriptableObject&lt;T&gt;(string assetName) where T : ScriptableObject</method>
+        <method name="PreloadAssets">void PreloadAssets(List&lt;string&gt; assetNames, Type assetType)</method>
+        <method name="ClearCache">void ClearCache()</method>
+        <method name="GetCacheStats">CacheStats GetCacheStats()</method>
+        <method name="IsAssetCached">bool IsAssetCached(string assetName, Type assetType)</method>
+        <method name="LoadAllAssets">T[] LoadAllAssets&lt;T&gt;() where T : UnityEngine.Object</method>
+        <method name="LoadAssetAsync">void LoadAssetAsync(string assetName, Type assetType, Action&lt;UnityEngine.Object&gt; callback)</method>
+        <method name="ValidateRequiredAssets">ValidationResult ValidateRequiredAssets(List&lt;string&gt; requiredAssets, Type assetType)</method>
+      </methods>
+      <events>
+        <event name="OnAssetLoaded">Action&lt;string, Type&gt; OnAssetLoaded</event>
+        <event name="OnAssetLoadFailed">Action&lt;string, Type, Exception&gt; OnAssetLoadFailed</event>
+        <event name="OnCacheCleared">Action OnCacheCleared</event>
+      </events>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Use Unity Test Framework with Performance Testing package. Tests should be organized in EditMode and PlayMode assemblies. Performance tests must use PerformanceBenchmark base class and measure against established targets (100ms loading time, 20MB memory, 20KB GC pressure). Mock implementations should follow existing MockAssetLoader pattern.</standards>
+    <locations>
+      <directory>Assets/Tests/EditMode/MapGeneration/AssetLoading/</directory>
+      <directory>Assets/Tests/PlayMode/MapGeneration/AssetLoading/</directory>
+      <directory>Assets/Tests/EditMode/MapGeneration/Performance/</directory>
+    </locations>
+    <ideas>
+      <test ac="TileAssetLoader with caching exists for 691 existing tiles">
+        <name>TileAssetLoader_LoadsAllTiles_Successfully</name>
+        <type>Integration</type>
+        <description>Verify that TileAssetLoader can load and cache all 684 detected tile assets without errors</description>
+      </test>
+      <test ac="tiles are grouped by type (floors, walls, decor) for organized access">
+        <name>TileAssetLoader_GroupsTilesByType_Correctly</name>
+        <type>EditMode</type>
+        <description>Test tile categorization using TilesetConfiguration.TileType enum and verify correct grouping</description>
+      </test>
+      <test ac="weighted random tile selection supports variety in generation">
+        <name>TileAssetLoader_WeightedSelection_DistributesCorrectly</name>
+        <type>EditMode</type>
+        <description>Verify weighted random selection using TileMapping weights produces expected distribution over many iterations</description>
+      </test>
+      <test ac="memory-efficient tile management prevents excessive allocation">
+        <name>TileAssetLoader_MemoryUsage_StaysWithinLimits</name>
+        <type>Performance</type>
+        <description>Performance test using PerformanceBenchmark to verify memory usage stays under 20MB</description>
+      </test>
+      <test ac="cache hit rate exceeds 95% for repeated asset access">
+        <name>TileAssetLoader_CacheHitRate_Exceeds95Percent</name>
+        <type>Performance</type>
+        <description>Test cache performance by loading same assets repeatedly and measuring hit rate</description>
+      </test>
+      <test ac="asset preloading support">
+        <name>TileAssetLoader_PreloadAssets_ImprovesPerformance</name>
+        <type>Performance</type>
+        <description>Compare performance with and without preloading to verify improvement</description>
+      </test>
+    </ideas>
+  </tests>
+</story-context>

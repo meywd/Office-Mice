@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>
+  <story-id>3-4-resource-distribution</story-id>
+  <title>Resource Distribution System</title>
+  <epic>3-content-asset-integration</epic>
+  <created>2025-11-17</created>
+  <last-updated>2025-11-17</updated>
+  
+  <summary>
+    Implements balanced resource distribution system that places health pickups, ammo crates, food items, and weapons throughout generated maps according to room-type specific rules and difficulty scaling.
+  </summary>
+  
+  <acceptance-criteria>
+    <criteria id="AC1">
+      <given>Spawn points have been placed throughout map</given>
+      <when>Resource distribution system runs</when>
+      <then>Health pickup placement is scarce (10-15% of rooms)</then>
+    </criteria>
+    
+    <criteria id="AC2">
+      <given>Map rooms are classified</given>
+      <when>Resource distribution occurs</when>
+      <then>Ammo crate distribution is moderate (30-40% of rooms)</then>
+    </criteria>
+    
+    <criteria id="AC3">
+      <given>Break rooms are identified</given>
+      <when>Resources are placed</when>
+      <then>Food item placement is abundant in break rooms (80%)</then>
+    </criteria>
+    
+    <criteria id="AC4">
+      <given>Loot rooms exist in map</given>
+      <when>Weapon distribution runs</when>
+      <then>Weapon spawning occurs in designated loot rooms</then>
+    </criteria>
+    
+    <criteria id="AC5">
+      <given>Difficulty level is set</given>
+      <when>Resources are distributed</when>
+      <then>Difficulty-based resource scaling adjusts availability</then>
+    </criteria>
+  </acceptance-criteria>
+  
+  <technical-requirements>
+    <requirement id="TR1">Create ResourceDistributor class with probability-based placement</requirement>
+    <requirement id="TR2">Implement room-type specific resource rules</requirement>
+    <requirement id="TR3">Add difficulty scaling algorithms</requirement>
+    <requirement id="TR4">Balance resource scarcity for gameplay fairness</requirement>
+    <requirement id="TR5">Support designer-defined distribution curves</requirement>
+    <requirement id="TR6">Integrate with existing Assets/Game/Items prefabs</requirement>
+    <requirement id="TR7">Achieve performance targets: &lt;200ms placement time for 100 rooms</requirement>
+  </technical-requirements>
+  
+  <implementation-tasks>
+    <task id="T1" status="pending">Create ResourceDistributor class with core placement logic</task>
+    <task id="T2" status="pending">Implement probability-based placement algorithms</task>
+    <task id="T3" status="pending">Add room-type specific resource rules</task>
+    <task id="T4" status="pending">Create difficulty scaling system</task>
+    <task id="T5" status="pending">Add resource balancing algorithms</task>
+    <task id="T6" status="pending">Implement distribution validation</task>
+    <task id="T7" status="pending">Create resource placement tests</task>
+    <task id="T8" status="pending">Integrate with MapContentPopulator</task>
+  </implementation-tasks>
+  
+  <dependencies>
+    <dependency story-id="3-3-spawn-points">Spawn Point Generation System</dependency>
+    <dependency story-id="3-2-furniture-placement">Furniture Placement System</dependency>
+    <dependency story-id="3-1-asset-loading">Asset Loading and Management</dependency>
+  </dependencies>
+  
+  <assets-required>
+    <asset path="Assets/Game/Items/Health.prefab">Health pickup prefab</asset>
+    <asset path="Assets/Game/Items/AmmoCrate.prefab">Ammo crate prefab</asset>
+    <asset path="Assets/Game/Items/Guns/BasicGun.prefab">Basic weapon prefab</asset>
+    <asset path="Assets/Game/Items/Guns/MachineGun.prefab">Advanced weapon prefab</asset>
+    <asset path="Assets/Game/Items/cake.png">Food item texture</asset>
+    <asset path="Assets/Game/Items/chips.png">Food item texture</asset>
+    <asset path="Assets/Game/Items/coldbrew.png">Food item texture</asset>
+  </assets-required>
+  
+  <performance-targets>
+    <target metric="placement-time" unit="ms" max="200" for-map-size="100-rooms">Resource placement time</target>
+    <target metric="memory-usage" unit="MB" max="5" for-map-size="100-rooms">Resource data memory</target>
+    <target metric="collision-checks" unit="count" max="1000" for-map-size="100-rooms">Collision detection calls</target>
+  </performance-targets>
+  
+  <test-requirements>
+    <test type="unit">ResourceDistributor placement algorithms</test>
+    <test type="unit">Room-type specific rule validation</test>
+    <test type="unit">Difficulty scaling verification</test>
+    <test type="integration">MapContentPopulator integration</test>
+    <test type="performance">Placement time benchmarks</test>
+    <test type="validation">Resource distribution balance validation</test>
+  </test-requirements>
+  
+  <room-type-distribution-rules>
+    <room-type name="Office">
+      <resource type="Health" probability="0.1" min-qty="1" max-qty="1"/>
+      <resource type="Ammo" probability="0.3" min-qty="1" max-qty="2"/>
+      <resource type="Food" probability="0.2" min-qty="1" max-qty="1"/>
+    </room-type>
+    
+    <room-type name="Conference">
+      <resource type="Health" probability="0.15" min-qty="1" max-qty="2"/>
+      <resource type="Ammo" probability="0.4" min-qty="2" max-qty="3"/>
+      <resource type="Weapon" probability="0.1" min-qty="1" max-qty="1"/>
+    </room-type>
+    
+    <room-type name="BreakRoom">
+      <resource type="Health" probability="0.2" min-qty="1" max-qty="2"/>
+      <resource type="Food" probability="0.8" min-qty="3" max-qty="5"/>
+      <resource type="PowerUp" probability="0.3" min-qty="1" max-qty="2"/>
+    </room-type>
+    
+    <room-type name="Storage">
+      <resource type="Ammo" probability="0.5" min-qty="2" max-qty="4"/>
+      <resource type="Health" probability="0.25" min-qty="1" max-qty="2"/>
+      <resource type="Weapon" probability="0.15" min-qty="1" max-qty="1"/>
+    </room-type>
+    
+    <room-type name="ServerRoom">
+      <resource type="PowerUp" probability="0.4" min-qty="1" max-qty="2"/>
+      <resource type="Health" probability="0.1" min-qty="1" max-qty="1"/>
+    </room-type>
+    
+    <room-type name="Lobby">
+      <resource type="Health" probability="0.3" min-qty="2" max-qty="3"/>
+      <resource type="Ammo" probability="0.35" min-qty="2" max-qty="3"/>
+      <resource type="Weapon" probability="0.2" min-qty="1" max-qty="2"/>
+    </room-type>
+  </room-type-distribution-rules>
+  
+  <difficulty-scaling>
+    <level value="1" health-mod="1.0" ammo-mod="1.0" weapon-mod="0.8"/>
+    <level value="3" health-mod="0.9" ammo-mod="1.1" weapon-mod="1.0"/>
+    <level value="5" health-mod="0.8" ammo-mod="1.2" weapon-mod="1.2"/>
+    <level value="7" health-mod="0.7" ammo-mod="1.3" weapon-mod="1.4"/>
+    <level value="10" health-mod="0.6" ammo-mod="1.5" weapon-mod="1.6"/>
+  </difficulty-scaling>
+</context>

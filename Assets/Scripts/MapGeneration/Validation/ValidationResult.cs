@@ -60,5 +60,26 @@ namespace OfficeMice.MapGeneration.Validation
             _errors.Clear();
             _warnings.Clear();
         }
+        
+        /// <summary>
+        /// Creates a successful validation result.
+        /// </summary>
+        /// <returns>ValidationResult with no errors</returns>
+        public static ValidationResult Success()
+        {
+            return new ValidationResult();
+        }
+        
+        /// <summary>
+        /// Creates a failed validation result with an error message.
+        /// </summary>
+        /// <param name="errorMessage">Error message to include</param>
+        /// <returns>ValidationResult with the specified error</returns>
+        public static ValidationResult Failure(string errorMessage)
+        {
+            var result = new ValidationResult();
+            result.AddError(errorMessage);
+            return result;
+        }
     }
 }
