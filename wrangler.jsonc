@@ -1,0 +1,45 @@
+{
+  // Cloudflare Workers Configuration for Office-Mice
+  // Documentation: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+  "name": "office-mice",
+  "main": "src/index.js",
+  "compatibility_date": "2025-01-16",
+
+  // Static Assets Configuration
+  // This serves your Unity WebGL build files
+  "assets": {
+    "directory": "./build/WebGL/office-mice",
+    // Treat as single-page application (handles routing)
+    "not_found_handling": "single-page-application",
+    // Auto-handle HTML files with trailing slashes
+    "html_handling": "auto-trailing-slash",
+    // Enable serving of compressed files
+    "binding": "ASSETS"
+  },
+
+  // Custom routes (optional - removes /workers.dev subdomain)
+  // Uncomment and set your custom domain
+  // "routes": [
+  //   { "pattern": "officemice.com", "custom_domain": true }
+  // ],
+
+  // Environment variables (if needed for future features)
+  "vars": {
+    "ENVIRONMENT": "production",
+    "GAME_VERSION": "1.0.0"
+  },
+
+  // Browser compatibility settings
+  "compatibility_flags": [],
+
+  // Observability settings
+  "observability": {
+    "enabled": true
+  },
+
+  // Limits (optional - adjust based on your needs)
+  "limits": {
+    "cpu_ms": 50
+  }
+}
