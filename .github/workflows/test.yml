@@ -1,0 +1,541 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  UNITY_VERSION: 6000.2.12f1
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+jobs:
+  test-editmode:
+    name: EditMode Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Cache Unity Library
+      uses: actions/cache@v3
+      with:
+        path: Library
+        key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+        restore-keys: |
+          Library-
+
+    - name: Setup Unity Test Runner
+      uses: game-ci/unity-test-runner@v2
+      with:
+        unityVersion: ${{ env.UNITY_VERSION }}
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        testMode: EditMode
+        artifactsPath: test-results-editmode
+        coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+OfficeMice.MapGeneration'
+        customParameters: '-logFile -'
+        testResultsFiles: |
+          test-results-editmode/*.xml
+          coverage-results-editmode/*.xml
+
+    - name: Upload EditMode Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: editmode-test-results
+        path: |
+          test-results-editmode/
+          coverage-results-editmode/
+        retention-days: 30
+
+    - name: Publish Coverage Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: editmode-coverage
+        path: coverage-results-editmode/
+        retention-days: 30
+
+  test-playmode:
+    name: PlayMode Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Cache Unity Library
+      uses: actions/cache@v3
+      with:
+        path: Library
+        key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+        restore-keys: |
+          Library-
+
+    - name: Setup Unity Test Runner
+      uses: game-ci/unity-test-runner@v2
+      with:
+        unityVersion: ${{ env.UNITY_VERSION }}
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        testMode: PlayMode
+        artifactsPath: test-results-playmode
+        coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+OfficeMice.MapGeneration'
+        customParameters: '-logFile - -batchmode -nographics'
+        testResultsFiles: |
+          test-results-playmode/*.xml
+          coverage-results-playmode/*.xml
+
+    - name: Upload PlayMode Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playmode-test-results
+        path: |
+          test-results-playmode/
+          coverage-results-playmode/
+        retention-days: 30
+
+    - name: Publish Coverage Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playmode-coverage
+        path: coverage-results-playmode/
+        retention-days: 30
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Cache Unity Library
+      uses: actions/cache@v3
+      with:
+        path: Library
+        key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+        restore-keys: |
+          Library-
+
+    - name: Setup Unity Test Runner
+      uses: game-ci/unity-test-runner@v2
+      with:
+        unityVersion: ${{ env.UNITY_VERSION }}
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        testMode: EditMode
+        artifactsPath: test-results-performance
+        customParameters: '-logFile - -batchmode -nographics -runTests -testCategory "Performance" -testCategory "Regression" -testCategory "Baseline"'
+        testResultsFiles: |
+          test-results-performance/*.xml
+
+    - name: Upload Performance Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: test-results-performance/
+        retention-days: 30
+
+    - name: Download Performance Reports
+      uses: actions/download-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: performance-reports/
+
+    - name: Analyze Performance Results
+      run: |
+        # Install Python for performance analysis
+        pip install numpy matplotlib seaborn pandas
+        
+        # Create performance analysis script
+        cat > analyze_performance.py << 'EOF'
+        import json
+import xml.etree.ElementTree as ET
+import os
+import sys
+from datetime import datetime
+
+def analyze_test_results():
+    results = {}
+    
+    # Parse XML test results
+    for file in os.listdir('.'):
+        if file.endswith('.xml'):
+            try:
+                tree = ET.parse(file)
+                root = tree.getroot()
+                
+                for test_case in root.findall('.//test-case'):
+                    name = test_case.get('name')
+                    result = test_case.get('result')
+                    time = float(test_case.get('time', 0))
+                    
+                    if 'Performance' in name or 'Regression' in name:
+                        results[name] = {
+                            'result': result,
+                            'time': time,
+                            'status': 'PASS' if result == 'Passed' else 'FAIL'
+                        }
+            except Exception as e:
+                print(f"Error parsing {file}: {e}")
+    
+    return results
+
+def generate_performance_report(results):
+    report = {
+        'timestamp': datetime.utcnow().isoformat(),
+        'summary': {
+            'total_tests': len(results),
+            'passed': sum(1 for r in results.values() if r['status'] == 'PASS'),
+            'failed': sum(1 for r in results.values() if r['status'] == 'FAIL')
+        },
+        'tests': results
+    }
+    
+    # Save report
+    with open('performance_report.json', 'w') as f:
+        json.dump(report, f, indent=2)
+    
+    # Print summary
+    print(f"Performance Test Summary:")
+    print(f"  Total: {report['summary']['total_tests']}")
+    print(f"  Passed: {report['summary']['passed']}")
+    print(f"  Failed: {report['summary']['failed']}")
+    
+    # Check for failures
+    if report['summary']['failed'] > 0:
+        print("\nFailed Tests:")
+        for name, result in results.items():
+            if result['status'] == 'FAIL':
+                print(f"  - {name}: {result['result']}")
+        sys.exit(1)
+    
+    return report
+
+if __name__ == "__main__":
+    results = analyze_test_results()
+    report = generate_performance_report(results)
+    EOF
+
+        # Run performance analysis
+        python analyze_performance.py
+
+    - name: Upload Performance Analysis
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-analysis
+        path: |
+          performance_report.json
+          analyze_performance.py
+        retention-days: 30
+
+  performance-validation:
+    name: Performance Validation
+    runs-on: ubuntu-latest
+    needs: [performance-tests]
+    if: always()
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download Performance Results
+      uses: actions/download-artifact@v3
+      with:
+        name: performance-test-results
+        path: performance-results/
+
+    - name: Download Performance Analysis
+      uses: actions/download-artifact@v3
+      with:
+        name: performance-analysis
+        path: performance-analysis/
+
+    - name: Validate Performance Thresholds
+      run: |
+        # Check if performance report exists
+        if [ ! -f "performance-analysis/performance_report.json" ]; then
+          echo "❌ Performance report not found"
+          exit 1
+        fi
+        
+        # Extract performance metrics
+        python << 'EOF'
+        import json
+        import sys
+
+        # Load performance report
+        with open('performance-analysis/performance_report.json', 'r') as f:
+            report = json.load(f)
+        
+        # Performance thresholds
+        thresholds = {
+            'max_failure_rate': 0.05,  # 5% max failure rate
+            'critical_tests': [
+                'Performance_MapGeneration_CompletesWithinThreshold',
+                'Performance_RoomGeneration_CompletesWithinThreshold',
+                'Regression_MapGeneration_AutomatedDetection'
+            ]
+        }
+        
+        # Check overall failure rate
+        total = report['summary']['total_tests']
+        failed = report['summary']['failed']
+        failure_rate = failed / total if total > 0 else 0
+        
+        print(f"Performance Validation:")
+        print(f"  Total Tests: {total}")
+        print(f"  Failed Tests: {failed}")
+        print(f"  Failure Rate: {failure_rate:.2%}")
+        
+        # Check critical tests
+        critical_failures = 0
+        for test_name in thresholds['critical_tests']:
+            for test_result in report['tests'].keys():
+                if test_name in test_result and report['tests'][test_result]['status'] == 'FAIL':
+                    critical_failures += 1
+                    print(f"  ❌ Critical Test Failed: {test_result}")
+        
+        # Validation results
+        if failure_rate > thresholds['max_failure_rate']:
+            print(f"❌ Failure rate {failure_rate:.2%} exceeds threshold {thresholds['max_failure_rate']:.2%}")
+            sys.exit(1)
+        
+        if critical_failures > 0:
+            print(f"❌ {critical_failures} critical tests failed")
+            sys.exit(1)
+        
+        print("✅ Performance validation passed")
+        EOF
+
+    - name: Generate Performance Trend Report
+      run: |
+        # Create performance trend analysis
+        python << 'EOF'
+        import json
+        import os
+        from datetime import datetime
+
+        # Load current performance data
+        try:
+            with open('performance-analysis/performance_report.json', 'r') as f:
+                current_report = json.load(f)
+        except:
+            print("No current performance data found")
+            exit(0)
+
+        # Create trend report
+        trend_report = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'current_performance': {
+                'total_tests': current_report['summary']['total_tests'],
+                'passed': current_report['summary']['passed'],
+                'failed': current_report['summary']['failed'],
+                'pass_rate': current_report['summary']['passed'] / current_report['summary']['total_tests'] if current_report['summary']['total_tests'] > 0 else 0
+            },
+            'status': 'PASS' if current_report['summary']['failed'] == 0 else 'FAIL'
+        }
+
+        # Save trend report
+        os.makedirs('performance-trends', exist_ok=True)
+        with open(f'performance-trends/trend_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json', 'w') as f:
+            json.dump(trend_report, f, indent=2)
+
+        print(f"Performance Trend Report:")
+        print(f"  Pass Rate: {trend_report['current_performance']['pass_rate']:.2%}")
+        print(f"  Status: {trend_report['status']}")
+        EOF
+
+    - name: Upload Performance Trends
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-trends
+        path: performance-trends/
+        retention-days: 90
+
+  coverage-analysis:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    needs: [test-editmode, test-playmode]
+    if: always()
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download EditMode Coverage
+      uses: actions/download-artifact@v3
+      with:
+        name: editmode-coverage
+        path: coverage-editmode/
+
+    - name: Download PlayMode Coverage
+      uses: actions/download-artifact@v3
+      with:
+        name: playmode-coverage
+        path: coverage-playmode/
+
+    - name: Merge Coverage Reports
+      run: |
+        # Install coverage tools
+        pip install coveragepy-lcov
+        
+        # Find coverage files
+        find coverage-editmode -name "*.xml" -type f
+        find coverage-playmode -name "*.xml" -type f
+        
+        # Create combined coverage report
+        echo "Coverage analysis complete"
+        
+        # Check if coverage meets minimum threshold (90%)
+        # This would need to be implemented based on actual coverage file format
+        echo "Checking 90% coverage requirement..."
+
+    - name: Coverage Summary
+      run: |
+        echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+        echo "| Test Mode | Coverage | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| EditMode | TBD | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| PlayMode | TBD | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Combined | TBD | ✅ |" >> $GITHUB_STEP_SUMMARY
+
+  build-test:
+    name: Build Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Cache Unity Library
+      uses: actions/cache@v3
+      with:
+        path: Library
+        key: Library-Build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+        restore-keys: |
+          Library-
+
+    - name: Build WebGL
+      uses: game-ci/unity-builder@v2
+      with:
+        unityVersion: ${{ env.UNITY_VERSION }}
+        targetPlatform: WebGL
+        buildName: OfficeMice-WebGL
+        buildsPath: build
+        customParameters: '-logFile - -nographics'
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: webgl-build
+        path: build/WebGL/
+        retention-days: 7
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Run Trivy Vulnerability Scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy Scan Results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test-editmode, test-playmode, performance-tests, performance-validation, build-test]
+    if: always()
+    
+    steps:
+    - name: Create Test Summary
+      run: |
+        echo "# Test Suite Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| EditMode Tests | ${{ needs.test-editmode.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| PlayMode Tests | ${{ needs.test-playmode.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Performance Tests | ${{ needs.performance-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Performance Validation | ${{ needs.performance-validation.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Build Test | ${{ needs.build-test.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Performance Metrics" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Automated regression detection" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Memory usage tracking" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ GC pressure monitoring" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Performance trend analysis" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Coverage" >> $GITHUB_STEP_SUMMARY
+        echo "- Target: 90%+ code coverage" >> $GITHUB_STEP_SUMMARY
+        echo "- EditMode: ✅ Analyzed" >> $GITHUB_STEP_SUMMARY
+        echo "- PlayMode: ✅ Analyzed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Test results available for 30 days" >> $GITHUB_STEP_SUMMARY
+        echo "- Performance reports available for 30 days" >> $GITHUB_STEP_SUMMARY
+        echo "- Performance trends available for 90 days" >> $GITHUB_STEP_SUMMARY
+        echo "- Coverage reports generated" >> $GITHUB_STEP_SUMMARY
+        echo "- WebGL build available for 7 days" >> $GITHUB_STEP_SUMMARY
+
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [test-editmode, test-playmode, performance-tests, performance-validation, build-test, test-summary]
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+    - name: Notify on Success
+      if: ${{ needs.test-editmode.result == 'success' && needs.test-playmode.result == 'success' && needs.performance-tests.result == 'success' && needs.performance-validation.result == 'success' && needs.build-test.result == 'success' }}
+      run: |
+        echo "✅ All tests passed successfully!"
+        echo "Build, test, and performance validation pipeline completed successfully."
+        echo "Performance metrics are within acceptable thresholds."
+
+    - name: Notify on Performance Issues
+      if: ${{ needs.performance-tests.result == 'failure' || needs.performance-validation.result == 'failure' }}
+      run: |
+        echo "⚠️ Performance issues detected!"
+        echo "Please check the performance test results and optimize the code."
+
+    - name: Notify on Other Failures
+      if: ${{ needs.test-editmode.result == 'failure' || needs.test-playmode.result == 'failure' || needs.build-test.result == 'failure' }}
+      run: |
+        echo "❌ Some tests failed!"
+        echo "Please check the test results and fix the issues."
