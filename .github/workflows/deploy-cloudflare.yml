@@ -17,6 +17,26 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+          fetch-depth: 0
+
+      # Cache Git LFS objects for faster checkout
+      - name: Cache Git LFS
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs
+          key: GitLFS-${{ hashFiles('.lfsconfig') }}
+          restore-keys: |
+            GitLFS-
+
+      # Cache Unity Library folder (speeds up builds by 50%+)
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-WebGL-
+            Library-
 
       # Free up disk space (Unity builds need lots of space)
       - name: Free Disk Space
