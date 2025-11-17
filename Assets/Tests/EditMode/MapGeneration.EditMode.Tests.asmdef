@@ -4,6 +4,7 @@
     "references": [
         "Unity.TestRunner",
         "UnityEditor.TestRunner",
+        "Unity.Performance.Testing",
         "MapGeneration"
     ],
     "includePlatforms": [

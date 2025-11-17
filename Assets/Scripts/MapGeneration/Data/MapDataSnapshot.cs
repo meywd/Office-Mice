@@ -33,6 +33,10 @@ namespace OfficeMice.MapGeneration.Data
 
         [Header("Metadata")]
         public MapMetadataSnapshot metadata;
+        
+        [Header("Serialization Metadata")]
+        public string serializationVersion;
+        public long serializationTimestamp; // DateTime.Ticks
 
         // Default constructor for serialization
         public MapDataSnapshot()

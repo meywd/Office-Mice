@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Validation;
+using OfficeMice.MapGeneration.Configuration;
 
 namespace OfficeMice.MapGeneration.Tests
 {
@@ -240,5 +241,195 @@ namespace OfficeMice.MapGeneration.Tests
             Assert.IsTrue(internalString.Contains("Node"));
             Assert.IsTrue(internalString.Contains("Depth:0"));
         }
+
+        [Test]
+        public void Split_WithDeterministicRandom_ProducesIdenticalResults()
+        {
+            // Arrange
+            var bounds = new RectInt(0, 0, 100, 100);
+            var node1 = new BSPNode(bounds);
+            var node2 = new BSPNode(bounds);
+            var random1 = new System.Random(12345);
+            var random2 = new System.Random(12345);
+            var config = new BSPConfiguration
+            {
+                MinPartitionSize = 10,
+                MaxDepth = 3,
+                SplitPositionVariation = 0.3f,
+                StopSplittingChance = 0.1f
+            };
+
+            // Act
+            node1.SplitRecursive(config, random1);
+            node2.SplitRecursive(config, random2);
+
+            // Assert
+            var leaves1 = node1.GetLeafNodes();
+            var leaves2 = node2.GetLeafNodes();
+            Assert.AreEqual(leaves1.Count, leaves2.Count);
+
+            for (int i = 0; i < leaves1.Count; i++)
+            {
+                Assert.AreEqual(leaves1[i].Bounds, leaves2[i].Bounds);
+            }
+        }
+
+        [Test]
+        public void SplitRecursive_WithConfiguration_CreatesValidTree()
+        {
+            // Arrange
+            var bounds = new RectInt(0, 0, 100, 100);
+            var node = new BSPNode(bounds);
+            var config = new BSPConfiguration
+            {
+                MinPartitionSize = 10,
+                MaxDepth = 4,
+                SplitPreference = SplitPreference.Alternate,
+                SplitPositionVariation = 0.3f,
+                StopSplittingChance = 0.1f
+            };
+
+            // Act
+            node.SplitRecursive(config, new System.Random(12345));
+
+            // Assert
+            var validation = node.Validate();
+            Assert.IsFalse(validation.HasErrors, $"Validation errors: {validation.GetErrorSummary()}");
+
+            var leaves = node.GetLeafNodes();
+            Assert.IsTrue(leaves.Count > 0, "Should have at least one leaf node");
+
+            // All leaf nodes should be within bounds and meet minimum size
+            foreach (var leaf in leaves)
+            {
+                Assert.IsTrue(leaf.Bounds.width >= config.MinPartitionSize);
+                Assert.IsTrue(leaf.Bounds.height >= config.MinPartitionSize);
+                Assert.IsTrue(bounds.Contains(leaf.Bounds.min));
+                Assert.IsTrue(bounds.Contains(leaf.Bounds.max - Vector2Int.one));
+            }
+        }
+
+        [Test]
+        public void SplitPreference_Horizontal_OnlyHorizontalSplits()
+        {
+            // Arrange
+            var bounds = new RectInt(0, 0, 100, 100);
+            var config = new BSPConfiguration
+            {
+                MinPartitionSize = 10,
+                MaxDepth = 3,
+                SplitPreference = SplitPreference.Horizontal,
+                AllowHorizontalSplits = true,
+                AllowVerticalSplits = false
+            };
+            var node = new BSPNode(bounds);
+
+            // Act
+            node.SplitRecursive(config, new System.Random(12345));
+
+            // Assert
+            AssertAllSplitsAreDirection(node, true); // true = horizontal
+        }
+
+        [Test]
+        public void SplitPreference_Vertical_OnlyVerticalSplits()
+        {
+            // Arrange
+            var bounds = new RectInt(0, 0, 100, 100);
+            var config = new BSPConfiguration
+            {
+                MinPartitionSize = 10,
+                MaxDepth = 3,
+                SplitPreference = SplitPreference.Vertical,
+                AllowHorizontalSplits = false,
+                AllowVerticalSplits = true
+            };
+            var node = new BSPNode(bounds);
+
+            // Act
+            node.SplitRecursive(config, new System.Random(12345));
+
+            // Assert
+            AssertAllSplitsAreDirection(node, false); // false = vertical
+        }
+
+        [Test]
+        public void SplitPositionVariation_WithRandom_ProducesVariedSplits()
+        {
+            // Arrange
+            var bounds = new RectInt(0, 0, 100, 100);
+            var config = new BSPConfiguration
+            {
+                MinPartitionSize = 10,
+                MaxDepth = 2,
+                SplitPositionVariation = 0.5f
+            };
+            var node1 = new BSPNode(bounds);
+            var node2 = new BSPNode(bounds);
+
+            // Act
+            node1.SplitRecursive(config, new System.Random(11111));
+            node2.SplitRecursive(config, new System.Random(22222));
+
+            // Assert
+            // The split positions should be different due to different random seeds
+            var splitPos1 = node1.SplitPosition;
+            var splitPos2 = node2.SplitPosition;
+            Assert.AreNotEqual(splitPos1, splitPos2);
+        }
+
+        [Test]
+        public void StopSplittingChance_PreventsFurtherSplits()
+        {
+            // Arrange
+            var bounds = new RectInt(0, 0, 100, 100);
+            var config = new BSPConfiguration
+            {
+                MinPartitionSize = 10,
+                MaxDepth = 10,
+                StopSplittingChance = 1.0f // Always stop splitting
+            };
+            var node = new BSPNode(bounds);
+
+            // Act
+            node.SplitRecursive(config, new System.Random(12345));
+
+            // Assert
+            // Should have stopped at first split
+            Assert.IsFalse(node.IsLeaf);
+            Assert.IsTrue(node.Left.IsLeaf);
+            Assert.IsTrue(node.Right.IsLeaf);
+        }
+
+        #region Helper Methods
+        private BSPNode FindNodeAtDepth(BSPNode root, int targetDepth)
+        {
+            if (root.Depth == targetDepth)
+                return root;
+
+            if (!root.IsLeaf)
+            {
+                var leftResult = FindNodeAtDepth(root.Left, targetDepth);
+                if (leftResult != null) return leftResult;
+
+                var rightResult = FindNodeAtDepth(root.Right, targetDepth);
+                return rightResult;
+            }
+
+            return null;
+        }
+
+        private void AssertAllSplitsAreDirection(BSPNode node, bool expectHorizontal)
+        {
+            if (!node.IsLeaf)
+            {
+                Assert.AreEqual(expectHorizontal, node.IsHorizontalSplit, 
+                    $"Node at depth {node.Depth} has unexpected split direction");
+                
+                AssertAllSplitsAreDirection(node.Left, expectHorizontal);
+                AssertAllSplitsAreDirection(node.Right, expectHorizontal);
+            }
+        }
+        #endregion
     }
 }

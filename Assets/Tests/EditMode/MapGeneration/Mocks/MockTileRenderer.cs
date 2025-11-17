@@ -142,9 +142,9 @@ namespace OfficeMice.MapGeneration.Mocks
             }
 
             // Simulate rendering corridor tiles
-            foreach (var position in corridor.Path)
+            foreach (var pathTile in corridor.PathTiles)
             {
-                var tilePos = new Vector3Int(position.x, position.y, 0);
+                var tilePos = new Vector3Int(pathTile.x, pathTile.y, 0);
                 var tile = CreateMockTile();
                 
                 _renderedTiles.Add(tilePos);

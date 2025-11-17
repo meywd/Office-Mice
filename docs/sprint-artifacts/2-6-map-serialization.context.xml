@@ -1,0 +1,233 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>6</storyId>
+    <title>Map Serialization System</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/2-6-map-serialization.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a player</asA>
+    <iWant>save/load functionality</iWant>
+    <soThat>I can preserve and share generated maps</soThat>
+    <tasks>1. [ ] Create JSON serialization implementation
+2. [ ] Implement binary serialization format
+3. [ ] Add version migration system
+4. [ ] Create compression support
+5. [ ] Implement round-trip validation
+6. [ ] Add serialization performance tests
+7. [ ] Create save/load UI integration</tasks>
+  </story>
+
+  <acceptanceCriteria>- **Given** a map has been successfully generated
+- **When** serialization system processes map
+- **Then** JSON serialization is available for development and debugging
+- **And** binary serialization is available for production efficiency
+- **And** version migration support handles data structure changes
+- **And** round-trip data integrity is 100% accurate
+- **And** compression reduces file size for storage efficiency</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic 2: Core Generation Engine</title>
+        <section>Story 2.6: Map Serialization System</section>
+        <snippet>FR11: System must serialize/deserialize maps for save/load functionality. Acceptance Criteria: JSON format for development/debugging, Binary format for production efficiency, Version migration support, 100% round-trip data integrity, Compression for storage efficiency.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ARCHITECTURE.md</path>
+        <title>Data Architecture - MapData and Serialization</title>
+        <section>Core Data Models</section>
+        <snippet>MapData class with [Serializable] attribute supporting Unity serialization. MapDataSnapshot pattern for handling non-serializable Unity objects. Complete data structure with rooms, corridors, BSP tree, spawn points, and resources.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Functional Requirement FR11: Map Serialization System</title>
+        <section>Functional Requirements</section>
+        <snippet>System must serialize/deserialize maps for save/load functionality. JSON format for development/debugging, Binary format for production efficiency, Version migration support, 100% round-trip data integrity, Compression for storage efficiency.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PERFORMANCE_TARGETS.md</path>
+        <title>Performance Requirements for Serialization</title>
+        <section>Component-Level Performance Targets</section>
+        <snippet>Map Generation: 3000ms total time budget. Serialization should fit within overall generation budget. Memory usage under 200MB, GC pressure under 500KB per frame.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <code>
+        <path>Assets/Scripts/MapGeneration/Data/MapData.cs</path>
+        <kind>data-model</kind>
+        <symbol>MapData</symbol>
+        <lines>14-416</lines>
+        <reason>Core data structure that needs serialization support. Contains [Serializable] attribute and CreateSnapshot() method for serialization pattern.</reason>
+      </code>
+      <code>
+        <path>Assets/Scripts/MapGeneration/Data/MapDataSnapshot.cs</path>
+        <kind>data-model</kind>
+        <symbol>MapDataSnapshot</symbol>
+        <lines>12-455</lines>
+        <reason>Existing snapshot pattern for serializing MapData. Contains all snapshot classes for rooms, corridors, BSP nodes, spawn points, and resources. Provides ToMapData() reconstruction method.</reason>
+      </code>
+      <code>
+        <path>Assets/Scripts/MapGeneration/Rendering/TilemapCompressor.cs</path>
+        <kind>utility</kind>
+        <symbol>TilemapCompressor</symbol>
+        <lines>12-292</lines>
+        <reason>Existing compression pattern in the codebase. Provides compression ratio calculation and tile grouping optimization that can be referenced for map data compression.</reason>
+      </code>
+      <code>
+        <path>Assets/Tests/EditMode/MapGeneration/Integration/DataModelIntegrationTests.cs</path>
+        <kind>test</kind>
+        <symbol>MapDataSnapshot_RoundTrip_WorksCorrectly</symbol>
+        <lines>137-176</lines>
+        <reason>Existing round-trip validation pattern for serialization. Shows how to test serialization integrity and validation of reconstructed data.</reason>
+      </code>
+    </code>
+    <dependencies>
+      <unity>
+        <package>com.unity.modules.jsonserialize</package>
+        <version>1.0.0</version>
+        <purpose>Unity's built-in JSON serialization support</purpose>
+      </unity>
+      <unity>
+        <package>com.unity.test-framework</package>
+        <version>1.4.5</version>
+        <purpose>Testing framework for serialization validation</purpose>
+      </unity>
+      <system>
+        <name>System.IO.Compression</name>
+        <purpose>.NET compression support for binary serialization</purpose>
+      </system>
+      <system>
+        <name>Newtonsoft.Json (optional)</name>
+        <purpose>Advanced JSON serialization if needed beyond Unity's JsonUtility</purpose>
+      </system>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <name>Unity Serialization Limitations</name>
+      <description>Unity's JsonUtility cannot serialize dictionaries or polymorphic types. Must use snapshot pattern to handle non-serializable Unity objects like Tilemap references.</description>
+      <impact>Design</impact>
+    </constraint>
+    <constraint>
+      <name>Performance Budget</name>
+      <description>Serialization must complete within overall 3-second map generation budget. Memory usage under 200MB, GC pressure under 500KB per frame.</description>
+      <impact>Performance</impact>
+    </constraint>
+    <constraint>
+      <name>100% Data Integrity</name>
+      <description>Round-trip serialization must be 100% accurate with no data loss or corruption. All validation must pass after reconstruction.</description>
+      <impact>Quality</impact>
+    </constraint>
+    <constraint>
+      <name>Version Migration Support</name>
+      <description>System must handle data structure changes between versions without breaking compatibility with existing saved maps.</description>
+      <impact>Maintainability</impact>
+    </constraint>
+    <constraint>
+      <name>Existing MapDataSnapshot Pattern</name>
+      <description>Must leverage existing snapshot pattern rather than creating new serialization approach. MapData.CreateSnapshot() method already exists.</description>
+      <impact>Architecture</impact>
+    </constraint>
+    <constraint>
+      <name>Unity 6 Compatibility</name>
+      <description>Serialization system must work with Unity 6.0 LTS and maintain compatibility with existing Unity systems.</description>
+      <impact>Platform</impact>
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>IMapSerializer</name>
+      <kind>class-interface</kind>
+      <signature>public interface IMapSerializer { string SerializeToJson(MapData map); byte[] SerializeToBinary(MapData map); MapData DeserializeFromJson(string json); MapData DeserializeFromBinary(byte[] data); bool ValidateRoundTrip(MapData map); }</signature>
+      <path>Assets/Scripts/MapGeneration/Serialization/IMapSerializer.cs</path>
+      <description>Primary interface for map serialization operations supporting both JSON and binary formats with validation.</description>
+    </interface>
+    <interface>
+      <name>IVersionMigrator</name>
+      <kind>class-interface</kind>
+      <signature>public interface IVersionMigrator { MapDataSnapshot Migrate(MapDataSnapshot data, string fromVersion, string toVersion); bool CanMigrate(string fromVersion, string toVersion); string[] GetSupportedVersions(); }</signature>
+      <path>Assets/Scripts/MapGeneration/Serialization/IVersionMigrator.cs</path>
+      <description>Interface for handling version migration of serialized map data between different data structure versions.</description>
+    </interface>
+    <interface>
+      <name>ICompressionProvider</name>
+      <kind>class-interface</kind>
+      <signature>public interface ICompressionProvider { byte[] Compress(byte[] data); byte[] Decompress(byte[] compressedData); float GetCompressionRatio(byte[] original, byte[] compressed); }</signature>
+      <path>Assets/Scripts/MapGeneration/Serialization/ICompressionProvider.cs</path>
+      <description>Interface for data compression providers supporting different compression algorithms.</description>
+    </interface>
+    <interface>
+      <name>MapData.CreateSnapshot()</name>
+      <kind>method</kind>
+      <signature>public MapDataSnapshot CreateSnapshot()</signature>
+      <path>Assets/Scripts/MapGeneration/Data/MapData.cs</path>
+      <description>Existing method that creates serializable snapshot from MapData, must be used by serialization system.</description>
+    </interface>
+    <interface>
+      <name>MapDataSnapshot.ToMapData()</name>
+      <kind>method</kind>
+      <signature>public MapData ToMapData()</signature>
+      <path>Assets/Scripts/MapGeneration/Data/MapDataSnapshot.cs</path>
+      <description>Existing method that reconstructs MapData from snapshot, must be used by deserialization system.</description>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with separate EditMode and PlayMode assemblies. Test data factories for reproducible scenarios. Mock implementations for interface contracts. Performance testing using Unity's Performance Testing API. Round-trip validation for all serialization tests. 100% data integrity validation required. Automated CI/CD test execution with performance regression detection.</standards>
+    <locations>
+      <directory>Assets/Tests/EditMode/MapGeneration/Serialization/</directory>
+      <directory>Assets/Tests/PlayMode/MapGeneration/Serialization/</directory>
+      <directory>Assets/Tests/EditMode/MapGeneration/Performance/</directory>
+      <pattern>**/*Serialization*.cs</pattern>
+      <pattern>**/*Serializer*.Tests.cs</pattern>
+    </locations>
+    <ideas>
+      <test>
+        <ac>JSON serialization available for development and debugging</ac>
+        <description>Test JSON serialization of complex maps with all data types. Validate human-readable output and proper formatting.</description>
+        <type>EditMode</type>
+      </test>
+      <test>
+        <ac>Binary serialization available for production efficiency</ac>
+        <description>Test binary serialization performance and file size. Compare with JSON for efficiency gains.</description>
+        <type>EditMode</type>
+      </test>
+      <test>
+        <ac>Version migration support handles data structure changes</ac>
+        <description>Test migration between different data versions. Ensure backward compatibility with existing saved maps.</description>
+        <type>EditMode</type>
+      </test>
+      <test>
+        <ac>Round-trip data integrity is 100% accurate</ac>
+        <description>Comprehensive round-trip tests for all map types and sizes. Validate all data after serialization/deserialization cycle.</description>
+        <type>EditMode</type>
+      </test>
+      <test>
+        <ac>Compression reduces file size for storage efficiency</ac>
+        <description>Test compression ratios and performance. Validate decompression accuracy and speed.</description>
+        <type>EditMode</type>
+      </test>
+      <test>
+        <ac>Performance requirements met</ac>
+        <description>Serialization performance tests with large maps (100+ rooms). Ensure within 3-second total budget.</description>
+        <type>Performance</type>
+      </test>
+      <test>
+        <ac>Error handling and validation</ac>
+        <description>Test serialization of corrupted data, invalid inputs, and edge cases. Validate graceful error handling.</description>
+        <type>EditMode</type>
+      </test>
+      <test>
+        <ac>Integration with existing systems</ac>
+        <description>Test serialization integration with map generation pipeline and save/load UI.</description>
+        <type>PlayMode</type>
+      </test>
+    </ideas>
+  </tests>
+</story-context>

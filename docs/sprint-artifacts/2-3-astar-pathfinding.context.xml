@@ -1,0 +1,104 @@
+<story-context id="{bmad_folder}/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.3</storyId>
+    <title>A* Pathfinding for Corridors</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/2-3-astar-pathfinding.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a player</asA>
+    <iWant>connected rooms</iWant>
+    <soThat>I can navigate the entire map without encountering dead ends</soThat>
+    <tasks>1. [ ] Implement A* algorithm core logic
+2. [ ] Add Manhattan distance heuristic
+3. [ ] Create priority queue for open set
+4. [ ] Implement obstacle detection system
+5. [ ] Add path smoothing algorithm
+6. [ ] Create corridor width validation
+7. [ ] Add performance optimizations</tasks>
+  </story>
+
+  <acceptanceCriteria>- **Given** rooms have been generated and classified
+- **When** corridor generation system runs
+- **Then** A* algorithm finds optimal paths between room doorways
+- **And** Manhattan distance heuristic guides pathfinding efficiency
+- **And** obstacle avoidance prevents paths through rooms and existing corridors
+- **And** path smoothing creates natural-looking corridors
+- **And** configurable corridor width (3-5 tiles) is supported</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="FR2: Room Connectivity System" snippet="System must connect all rooms with navigable corridors using A* pathfinding. 100% room connectivity guarantee. Corridor width configurable (3-5 tiles). Two-pass system for realistic office flow. Path smoothing for natural corridor appearance. No isolated or unreachable rooms." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Corridor Generation System" snippet="Two-pass corridor system with A* pathfinding and Manhattan heuristic. MST optimization for minimal corridor length. Path smoothing for natural appearance. Configurable corridor widths. BuildCorridor method uses AStarPathfinder to find optimal paths between room centers." />
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 2.3: A* Pathfinding for Corridors" snippet="As a player, I want connected rooms so that I can navigate the entire map without encountering dead ends. Given rooms have been generated and classified, When corridor generation system runs, Then A* algorithm finds optimal paths between room doorways." />
+      <doc path="docs/PERFORMANCE_TARGETS.md" title="Performance Targets" section="Component-Level Performance Targets" snippet="Pathfinding component: Max Time 50ms, Max Memory 10MB, Max GC Pressure 10KB. Corridor Generation component: Max Time 200ms, Max Memory 30MB, Max GC Pressure 50KB. Regression detection thresholds: Pathfinding ±25% time tolerance, ±30% memory tolerance." />
+      <doc path="docs/PHASE_1_PART1_GENERATION_ALGORITHMS.md" title="Generation Algorithms" section="A* Pathfinding Implementation" snippet="A* algorithm with Manhattan distance heuristic for grid-based pathfinding. Priority queue implementation for open set management. Early termination conditions for unreachable targets. Path smoothing algorithms to reduce jagged edges in corridor paths." />
+    </docs>
+    <code>
+      <code path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" kind="interface" symbol="IPathfinder" lines="1-132" reason="Core pathfinding interface that AStarPathfinder must implement. Defines FindPath, PathExists, OptimizePath methods and performance requirements." />
+      <code path="Assets/Scripts/MapGeneration/Interfaces/ICorridorGenerator.cs" kind="interface" symbol="ICorridorGenerator" lines="1-94" reason="Corridor generation interface that uses A* pathfinding. ConnectRooms method must use AStarPathfinder for optimal corridor paths." />
+      <code path="Assets/Scripts/MapGeneration/Data/CorridorData.cs" kind="data-model" symbol="CorridorData" lines="1-359" reason="Data structure for corridor representation. Contains path tiles, width validation, shape detection, and geometric operations for corridor management." />
+      <code path="Assets/Scripts/MapGeneration/Data/RoomData.cs" kind="data-model" symbol="RoomData" lines="1-274" reason="Room data structure with doorway positions that serve as start/end points for A* pathfinding between rooms." />
+      <code path="Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs" kind="configuration" symbol="MapGenerationSettings" lines="1-200" reason="Configuration class containing corridor width settings (primaryCorridorWidth, secondaryCorridorWidth) and path smoothing options." />
+      <code path="Assets/Tests/EditMode/MapGeneration/Mocks/MockPathfinder.cs" kind="test-mock" symbol="MockPathfinder" lines="1-120" reason="Mock implementation of IPathfinder for testing. Provides reference for interface implementation and test patterns." />
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.2d.tilemap" version="1.0.0" usage="Tilemap rendering system for corridor visualization" />
+        <package name="com.unity.test-framework" version="1.4.5" usage="Unit testing framework for A* algorithm validation" />
+        <package name="com.unity.test-framework.performance" version="3.0.3" usage="Performance testing for pathfinding optimization" />
+      </unity>
+      <system>
+        <framework name="Unity Collections" version="1.2.4" usage="Native collections for priority queue implementation" />
+        <framework name="Unity Mathematics" version="1.2.6" usage="Vector operations for Manhattan distance calculations" />
+      </system>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="interface" description="Must implement IPathfinder interface contract with all methods including FindPath, PathExists, OptimizePath, and performance tracking" />
+    <constraint type="algorithm" description="Must use A* algorithm with Manhattan distance heuristic for grid-based pathfinding" />
+    <constraint type="performance" description="Pathfinding must complete within 50ms for typical corridor paths and use less than 10MB memory" />
+    <constraint type="corridor-width" description="Must support configurable corridor widths between 3-5 tiles with validation" />
+    <constraint type="obstacle-avoidance" description="Must detect and avoid rooms and existing corridors as obstacles during pathfinding" />
+    <constraint type="path-smoothing" description="Must implement path smoothing algorithms to reduce jagged edges and create natural-looking corridors" />
+    <constraint type="early-termination" description="Must include early termination conditions for unreachable targets to prevent infinite loops" />
+    <constraint type="priority-queue" description="Must use efficient priority queue implementation for open set management in A* algorithm" />
+    <constraint type="deterministic" description="Must produce identical paths for same start/end/obstacle configuration for reproducible generation" />
+    <constraint type="validation" description="Must validate path continuity and ensure no gaps between consecutive path tiles" />
+    <constraint type="object-pooling" description="Should use object pooling for A* nodes to minimize GC pressure and memory allocations" />
+    <constraint type="unity-integration" description="Must integrate with Unity's Vector2Int and coordinate system for tile-based pathfinding" />
+  </constraints>
+  <interfaces>
+    <interface name="IPathfinder.FindPath" kind="core-method" signature="List&lt;Vector2Int&gt; FindPath(Vector2Int start, Vector2Int end, bool[,] obstacles)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Core A* pathfinding method for finding optimal corridor paths between room doorways" />
+    <interface name="IPathfinder.PathExists" kind="validation-method" signature="bool PathExists(Vector2Int start, Vector2Int end, bool[,] obstacles)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Quick path existence check for connectivity validation before full pathfinding" />
+    <interface name="IPathfinder.OptimizePath" kind="optimization-method" signature="List&lt;Vector2Int&gt; OptimizePath(List&lt;Vector2Int&gt; path, bool[,] obstacles)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Path smoothing method to reduce jagged edges and create natural-looking corridors" />
+    <interface name="IPathfinder.ValidatePathfindingParameters" kind="validation-method" signature="ValidationResult ValidatePathfindingParameters(Vector2Int start, Vector2Int end, bool[,] obstacles)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Parameter validation for start/end positions and obstacle map integrity" />
+    <interface name="IPathfinder.SetHeuristic" kind="configuration-method" signature="void SetHeuristic(Func&lt;Vector2Int, Vector2Int, float&gt; heuristic)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Method to set Manhattan distance heuristic for A* algorithm" />
+    <interface name="IPathfinder.GetPerformanceStats" kind="monitoring-method" signature="PathfindingStats GetPerformanceStats()" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Performance monitoring for pathfinding operations to meet 50ms target" />
+    <interface name="ICorridorGenerator.ConnectRooms" kind="integration-method" signature="List&lt;CorridorData&gt; ConnectRooms(List&lt;RoomData&gt; rooms, MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/ICorridorGenerator.cs" description="High-level corridor generation that uses A* pathfinding for room connectivity" />
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with NUnit. EditMode tests for A* algorithm unit testing. PlayMode tests for integration with corridor generation. Performance tests to validate 50ms pathfinding target. Mock implementations using existing MockPathfinder. Comprehensive validation using ValidationResult system. 90%+ code coverage requirement for pathfinding logic.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Pathfinding/ for A* algorithm unit tests. Assets/Tests/EditMode/MapGeneration/Integration/ for corridor-pathfinding integration tests. Assets/Tests/PlayMode/MapGeneration/ for runtime pathfinding validation. Assets/Tests/EditMode/MapGeneration/Performance/ for performance regression testing.</locations>
+    <ideas>
+      <test idea="AStarPathfinder.FindPath returns optimal path between two points" acceptance-criteria="AC3" />
+      <test idea="Manhattan distance heuristic guides pathfinding efficiently" acceptance-criteria="AC4" />
+      <test idea="Obstacle avoidance prevents paths through rooms and existing corridors" acceptance-criteria="AC5" />
+      <test idea="Path smoothing creates natural-looking corridors" acceptance-criteria="AC6" />
+      <test idea="Configurable corridor width (3-5 tiles) is supported" acceptance-criteria="AC7" />
+      <test idea="Early termination for unreachable targets prevents infinite loops" acceptance-criteria="Technical Notes" />
+      <test idea="Priority queue implementation maintains O(log n) operations" acceptance-criteria="Technical Notes" />
+      <test idea="Pathfinding completes within 50ms performance target" acceptance-criteria="Performance requirements" />
+      <test idea="Memory usage stays under 10MB during pathfinding" acceptance-criteria="Performance requirements" />
+      <test idea="GC pressure remains under 10KB per pathfinding operation" acceptance-criteria="Performance requirements" />
+      <test idea="Deterministic pathfinding produces identical results for same inputs" acceptance-criteria="Deterministic generation requirement" />
+      <test idea="Path validation ensures continuity between consecutive tiles" acceptance-criteria="Path quality requirements" />
+      <test idea="Integration with CorridorGenerator produces valid CorridorData objects" acceptance-criteria="Integration requirements" />
+    </ideas>
+  </tests>
+</story-context>

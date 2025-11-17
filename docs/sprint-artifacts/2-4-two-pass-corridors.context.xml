@@ -1,0 +1,112 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>4</storyId>
+    <title>Two-Pass Corridor System</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/2-4-two-pass-corridors.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>designer</asA>
+    <iWant>realistic office flow patterns</iWant>
+    <soThat>maps feel believable and intuitive</soThat>
+    <tasks>1. [ ] Implement core room identification
+2. [ ] Create primary corridor generation
+3. [ ] Implement secondary corridor generation
+4. [ ] Add corridor width variation
+5. [ ] Create connectivity validation system
+6. [ ] Add MST optimization for primary corridors
+7. [ ] Implement corridor hierarchy logic</tasks>
+  </story>
+
+  <acceptanceCriteria>- Given individual room-to-room paths exist
+- When two-pass corridor system processes connections
+- Then primary pass connects core rooms to form main hallways
+- And secondary pass connects remaining rooms to main arteries
+- And hierarchical corridor structure creates realistic office flow
+- And corridor width varies between main (5 tiles) and secondary (3 tiles)
+- And 100% room connectivity is guaranteed</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 2: Core Generation Engine - Story 2.4">
+        <snippet>Story 2.4: Two-Pass Corridor System - As a designer, I want realistic office flow patterns so that maps feel believable and intuitive. Technical Notes: Implement TwoPassCorridorGenerator class. Create core room identification logic. Add corridor width variation based on importance. Validate connectivity after generation to ensure no isolated rooms.</snippet>
+      </doc>
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Corridor Generation System">
+        <snippet>Two-pass hierarchical system: Primary pass connects core rooms to form main circulation spine, Secondary pass connects remaining rooms to main artery. Results in hierarchical, believable office layout. Key Features: Two-pass hierarchical system, A* pathfinding with Manhattan heuristic, MST optimization for minimal corridor length, Path smoothing for natural appearance, Configurable corridor widths.</snippet>
+      </doc>
+      <doc path="docs/MAP_GENERATION_PLAN.md" title="Map Generation Plan" section="Two-Pass Corridor Generation">
+        <snippet>Two-Pass Corridor Generation: 1. Primary Corridor Pass: Identify "core" rooms (e.g., largest from each major partition), Connect these core rooms first to form main circulation spine. 2. Secondary Connection Pass: Connect remaining "minor" rooms to this main artery. Results in hierarchical, believable office layout vs dungeon maze.</snippet>
+      </doc>
+      <doc path="docs/PERFORMANCE_TARGETS.md" title="Performance Targets" section="Corridor Generation Performance">
+        <snippet>Component-Level Performance Targets: Corridor Generation - Max Time: 200ms, Max Memory: 30MB, Max GC Pressure: 50KB. Regression Detection Thresholds: Corridor Generation - Time Tolerance: ±20%, Memory Tolerance: ±25%, GC Pressure Tolerance: ±30%, Absolute Thresholds: ±25ms, ±3MB.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" kind="interface" symbol="IPathfinder" lines="11-117" reason="A* pathfinding interface for corridor generation - provides FindPath, FindMultiplePaths, PathExists methods needed for two-pass corridor system">
+        <signature>List&lt;Vector2Int&gt; FindPath(Vector2Int start, Vector2Int end, bool[,] obstacles)</signature>
+      </artifact>
+      <artifact path="Assets/Scripts/MapGeneration/Interfaces/ICorridorGenerator.cs" kind="interface" symbol="ICorridorGenerator" lines="11-93" reason="Corridor generation interface that TwoPassCorridorGenerator must implement - provides ConnectRooms, ValidateConnectivity, OptimizeCorridors methods">
+        <signature>List&lt;CorridorData&gt; ConnectRooms(List&lt;RoomData&gt; rooms, MapGenerationSettings settings)</signature>
+      </artifact>
+      <artifact path="Assets/Scripts/MapGeneration/Data/RoomData.cs" kind="data" symbol="RoomData" lines="14-274" reason="Core room data structure with classification, bounds, and connectivity - needed for core room identification and corridor connections">
+        <signature>public RoomData(RectInt bounds) - constructor with spatial properties and RoomClassification</signature>
+      </artifact>
+      <artifact path="Assets/Scripts/MapGeneration/Data/CorridorData.cs" kind="data" symbol="CorridorData" lines="14-359" reason="Corridor data structure with path tiles, width, and connectivity - used to store both primary and secondary corridor results">
+        <signature>public CorridorData(int roomA, int roomB, Vector2Int start, Vector2Int end, int width = 3)</signature>
+      </artifact>
+      <artifact path="Assets/Scripts/MapGeneration/Pathfinding/AStarPathfinder.cs" kind="implementation" symbol="AStarPathfinder" lines="14-483" reason="Existing A* pathfinding implementation that can be reused for corridor pathfinding between rooms">
+        <signature>public class AStarPathfinder : IPathfinder - complete A* implementation with object pooling</signature>
+      </artifact>
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.2d.tilemap" version="1.0.0" usage="Tilemap rendering for corridor visualization"/>
+        <package name="com.h8man.2d.navmeshplus" version="master" usage="NavMesh generation for corridor connectivity validation"/>
+        <package name="com.unity.test-framework" version="1.4.5" usage="Unit testing framework for corridor system tests"/>
+      </unity>
+      <system>
+        <framework name="Unity Tilemap API" usage="Efficient batch operations with BoxFill for corridor rendering"/>
+        <framework name="NavMeshPlus" usage="2D NavMesh baking for corridor connectivity validation"/>
+        <framework name="Unity Test Framework" usage="EditMode and PlayMode tests for corridor generation"/>
+      </system>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance" description="Corridor generation must complete within 200ms for 100-room maps"/>
+    <constraint type="memory" description="Corridor generation memory usage must stay under 30MB"/>
+    <constraint type="connectivity" description="100% room connectivity guarantee - no isolated rooms allowed"/>
+    <constraint type="width" description="Primary corridors: 5 tiles width, Secondary corridors: 3 tiles width"/>
+    <constraint type="hierarchy" description="Must implement two-pass system: primary (core rooms) then secondary (remaining rooms)"/>
+    <constraint type="mst" description="Primary corridor connections must use MST algorithm for optimal connectivity"/>
+    <constraint type="interface" description="Must implement ICorridorGenerator interface contract"/>
+    <constraint type="validation" description="Must validate connectivity after generation and ensure no isolated rooms"/>
+  </constraints>
+  <interfaces>
+    <interface name="IPathfinder" kind="interface" signature="List&lt;Vector2Int&gt; FindPath(Vector2Int start, Vector2Int end, bool[,] obstacles)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs">
+      <description>A* pathfinding abstraction for corridor generation - provides optimal path finding while avoiding obstacles</description>
+    </interface>
+    <interface name="ICorridorGenerator" kind="interface" signature="List&lt;CorridorData&gt; ConnectRooms(List&lt;RoomData&gt; rooms, MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/ICorridorGenerator.cs">
+      <description>Corridor generation abstraction - connects rooms with optimal paths while ensuring 100% connectivity</description>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with EditMode and PlayMode assemblies. Test data factories for reproducible scenarios. Mock implementations for all interface contracts. Performance testing using Unity Performance Testing API. Validation tests for connectivity and corridor width requirements.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/ - Unit tests for corridor generation logic. Assets/Tests/PlayMode/MapGeneration/ - Integration tests for full corridor system. Assets/Tests/EditMode/MapGeneration/Performance/ - Performance regression tests.</locations>
+    <ideas>
+      <test ac="AC1" idea="Test primary corridor generation connects core rooms to form main hallways"/>
+      <test ac="AC2" idea="Test secondary corridor generation connects remaining rooms to main arteries"/>
+      <test ac="AC3" idea="Test hierarchical corridor structure creates realistic office flow"/>
+      <test ac="AC4" idea="Test corridor width variation (main: 5 tiles, secondary: 3 tiles)"/>
+      <test ac="AC5" idea="Test 100% room connectivity guarantee with validation"/>
+      <test ac="AC6" idea="Test MST optimization for primary corridor connections"/>
+      <test ac="AC7" idea="Test core room identification logic based on size and position"/>
+      <test ac="performance" idea="Performance test: corridor generation &lt;200ms for 100-room maps"/>
+      <test ac="memory" idea="Memory test: corridor generation &lt;30MB memory usage"/>
+    </ideas>
+  </tests>
+</story-context>

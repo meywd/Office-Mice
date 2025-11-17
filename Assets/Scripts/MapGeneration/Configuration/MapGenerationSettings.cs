@@ -30,6 +30,9 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField] private List<SpawnTableConfiguration> _spawnTables = new List<SpawnTableConfiguration>();
         [SerializeField] private List<TilesetConfiguration> _tilesets = new List<TilesetConfiguration>();
         
+        [Header("Room Classification")]
+        [SerializeField] private RoomClassificationSettings _classificationSettings;
+        
         [Header("Generation Rules")]
         [SerializeField] private GenerationRules _generationRules;
         [SerializeField] private ValidationRules _validationRules;
@@ -55,6 +58,7 @@ namespace OfficeMice.MapGeneration.Configuration
         public IReadOnlyList<BiomeConfiguration> BiomeConfigurations => _biomeConfigurations.AsReadOnly();
         public IReadOnlyList<SpawnTableConfiguration> SpawnTables => _spawnTables.AsReadOnly();
         public IReadOnlyList<TilesetConfiguration> Tilesets => _tilesets.AsReadOnly();
+        public RoomClassificationSettings ClassificationSettings => _classificationSettings;
         public GenerationRules GenerationRules => _generationRules;
         public ValidationRules ValidationRules => _validationRules;
         public PerformanceSettings PerformanceSettings => _performanceSettings;
@@ -137,6 +141,12 @@ namespace OfficeMice.MapGeneration.Configuration
                         result.Merge(tileset.Validate());
                 }
             }
+            
+            // Validate classification settings
+            if (_classificationSettings == null)
+                result.AddWarning("No classification settings configured - will use default room classification");
+            else
+                result.Merge(_classificationSettings.Validate());
             
             // Validate rules and settings
             if (_generationRules == null)

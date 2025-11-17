@@ -1,0 +1,126 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>5</storyId>
+    <title>Tilemap Rendering System</title>
+    <status>completed</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/2-5-tilemap-rendering.md</sourceStoryPath>
+    <completedAt>2025-11-17</completedAt>
+    <devAgent>TilemapGenerator Dev Story Workflow</devAgent>
+  </metadata>
+
+  <story>
+    <asA>game engine</asA>
+    <iWant>generated map data rendered to Unity tilemaps</iWant>
+    <soThat>players can see and interact with the environment</soThat>
+    <tasks>1. [ ] Create TilemapGenerator class
+2. [ ] Implement batch floor tile rendering
+3. [ ] Add wall tile perimeter system
+4. [ ] Create room-type specific tile selection
+5. [ ] Implement multi-layer tilemap support
+6. [ ] Add performance optimizations
+7. [ ] Create rendering validation tests</tasks>
+  </story>
+
+  <acceptanceCriteria>- Given map structure data exists with rooms and corridors
+- When tilemap rendering system executes
+- Then floor tiles are placed in all room and corridor areas
+- And wall tiles are placed around room and corridor perimeters
+- And Unity Tilemap API is used efficiently with batch operations
+- And different tile types are applied based on room classification
+- And rendering completes within performance targets</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="FR8: Tilemap Rendering System" snippet="System must render maps to Unity tilemaps. Acceptance Criteria: Efficient Unity Tilemap API usage, Batch operations for performance, Multiple tilemap layers (floor, wall, objects), Room-type specific tile application, Rendering completes within performance budget." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Tilemap Integration" snippet="TilemapRenderer class using Unity's Tilemap API. Batch fill floor tiles with BoxFill. Render wall tiles around perimeters. Optimize tilemap batching. Support multiple tilemap layers (floor, wall, decor)." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Interface Contracts" snippet="ITileRenderer interface for Unity Tilemap rendering abstraction. Methods: RenderMap, RenderRoom, RenderCorridor, ClearTilemaps, UpdateTiles, ValidateTilemapSetup, OptimizeTileRendering." />
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 2.5: Tilemap Rendering System" snippet="As the game engine, I want generated map data rendered to Unity tilemaps so that players can see and interact with the environment. Technical Notes: Create TilemapGenerator class using Unity's Tilemap API. Implement efficient batch operations with BoxFill. Support multiple tilemap layers (floor, wall, objects)." />
+      <doc path="docs/PERFORMANCE_TARGETS.md" title="Performance Targets" section="Rendering Performance" snippet="Tilemap Rendering - Max Time: 150ms, Max Memory: 25MB, Max GC Pressure: 40KB. Must use batch operations (BoxFill) for efficiency. Minimize draw calls through tilemap optimization." />
+    </docs>
+    <code>
+      <code path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs" kind="interface" symbol="ITileRenderer" lines="1-104" reason="Core interface that TilemapGenerator must implement - defines contract for rendering maps, rooms, corridors to Unity tilemaps with batch operations and optimization">
+        <signature>void RenderMap(MapData map, Tilemap[] tilemaps)</signature>
+      </code>
+      <code path="Assets/Scripts/MapGeneration/Data/MapData.cs" kind="data-model" symbol="MapData" lines="1-500" reason="Core data structure containing rooms and corridors that need to be rendered to tilemaps - provides spatial data and metadata for rendering system">
+        <signature>public IReadOnlyList&lt;RoomData&gt; Rooms, public IReadOnlyList&lt;CorridorData&gt; Corridors</signature>
+      </code>
+      <code path="Assets/Scripts/MapGeneration/Data/RoomData.cs" kind="data-model" symbol="RoomData" lines="1-274" reason="Room data structure with bounds, classification, and template assignment - provides spatial information for floor and wall tile rendering">
+        <signature>public RectInt Bounds, public RoomClassification Classification</signature>
+      </code>
+      <code path="Assets/Scripts/MapGeneration/Data/CorridorData.cs" kind="data-model" symbol="CorridorData" lines="1-359" reason="Corridor data structure with path tiles and width - provides tile positions for corridor floor rendering and perimeter wall calculation">
+        <signature>public IReadOnlyList&lt;Vector2Int&gt; PathTiles, public int Width</signature>
+      </code>
+      <code path="Assets/Scripts/MapGeneration/Configuration/TilesetConfiguration.cs" kind="configuration" symbol="TilesetConfiguration" lines="1-639" reason="ScriptableObject containing tile mappings, variations, and rules - provides tile selection logic for different room types and rendering variations">
+        <signature>public TileBase GetTileForType(TileType tileType, System.Random random = null)</signature>
+      </code>
+      <code path="Assets/Scripts/MapGeneration/Data/RoomClassification.cs" kind="enum" symbol="RoomClassification" lines="1-50" reason="Room type enumeration that determines tile selection - different room classifications require different tile types and visual styles">
+        <signature>Office, Conference, BreakRoom, Storage, Lobby, ServerRoom, Security, BossRoom</signature>
+      </code>
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.2d.tilemap" version="1.0.0" usage="Core tilemap rendering system for visual output of generated maps" />
+        <package name="com.unity.2d.tilemap.extras" version="package" usage="Additional tilemap utilities for advanced rendering operations and optimization" />
+        <package name="com.unity.test-framework" version="1.4.5" usage="Unit testing framework for tilemap rendering system validation" />
+        <package name="com.unity.test-framework.performance" version="3.0.3" usage="Performance testing for rendering optimization validation" />
+      </unity>
+      <external>
+        <package name="com.h8man.2d.navmeshplus" version="master" usage="2D NavMesh generation for tilemap collision validation" />
+      </external>
+      <system>
+        <framework name="Unity Tilemap API" usage="BoxFill for batch operations, SetTile for individual updates, tilemap layer management" />
+        <framework name="Unity Physics2D" usage="Tilemap collider generation for rendered tiles" />
+        <framework name="Unity Serialization" usage="ScriptableObject-based tileset configuration system" />
+      </system>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="interface" description="Must implement ITileRenderer interface contract completely with all methods" />
+    <constraint type="performance" description="Rendering must complete within 150ms for 100-room maps with batch operations" />
+    <constraint type="memory" description="Memory usage must stay under 25MB during rendering operations" />
+    <constraint type="batching" description="Must use Unity Tilemap API batch operations (BoxFill) for efficiency" />
+    <constraint type="layers" description="Must support multiple tilemap layers: floor, wall, objects/decor" />
+    <constraint type="room-types" description="Must apply different tile types based on RoomClassification from Story 2.2" />
+    <constraint type="tileset" description="Must use TilesetConfiguration ScriptableObject from Story 1.2 for tile selection" />
+    <constraint type="optimization" description="Must minimize draw calls through tilemap optimization and batching" />
+    <constraint type="validation" description="Must validate tilemap setup before rendering and handle errors gracefully" />
+    <constraint type="gc-pressure" description="Must keep GC pressure under 40KB per frame during rendering" />
+  </constraints>
+  <interfaces>
+    <interface name="ITileRenderer" kind="rendering-interface" signature="void RenderMap(MapData map, Tilemap[] tilemaps)" path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs">
+      <description>Main rendering interface that TilemapGenerator must implement - provides methods for rendering complete maps, individual rooms, corridors, and optimization</description>
+    </interface>
+    <interface name="ITileRenderer.RenderRoom" kind="method-signature" signature="void RenderRoom(RoomData room, Tilemap tilemap, TilesetConfiguration tileset)" path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs">
+      <description>Renders single room with floor tiles and wall perimeter using room bounds and classification</description>
+    </interface>
+    <interface name="ITileRenderer.RenderCorridor" kind="method-signature" signature="void RenderCorridor(CorridorData corridor, Tilemap tilemap, TilesetConfiguration tileset)" path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs">
+      <description>Renders corridor path tiles and wall perimeter using corridor path data and width</description>
+    </interface>
+    <interface name="ITileRenderer.OptimizeTileRendering" kind="method-signature" signature="void OptimizeTileRendering(Tilemap tilemap)" path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs">
+      <description>Optimizes tilemap by combining adjacent tiles and reducing draw calls</description>
+    </interface>
+    <interface name="TilesetConfiguration.GetTileForType" kind="method-signature" signature="TileBase GetTileForType(TileType tileType, System.Random random = null)" path="Assets/Scripts/MapGeneration/Configuration/TilesetConfiguration.cs">
+      <description>Gets appropriate tile for type with random selection and variations - used for room-type specific tiles</description>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with NUnit. EditMode tests for unit testing tilemap rendering logic. PlayMode tests for integration with Unity Tilemap API. Performance testing using Unity Performance Testing API. Mock implementations for Tilemap and TileBase objects. Validation tests for rendering accuracy and performance targets.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Rendering/ for unit tests. Assets/Tests/PlayMode/MapGeneration/Rendering/ for integration tests. Assets/Tests/EditMode/MapGeneration/Performance/ for performance regression tests.</locations>
+    <ideas>
+      <test idea="Test floor tile rendering in all room areas using BoxFill batch operations" acceptance-criteria="AC1" />
+      <test idea="Test wall tile placement around room and corridor perimeters" acceptance-criteria="AC2" />
+      <test idea="Test Unity Tilemap API batch operations efficiency and performance" acceptance-criteria="AC3" />
+      <test idea="Test room-type specific tile selection based on RoomClassification" acceptance-criteria="AC4" />
+      <test idea="Test multi-layer tilemap support (floor, wall, object layers)" acceptance-criteria="Technical Notes" />
+      <test idea="Test performance targets: rendering completes within 150ms for 100-room maps" acceptance-criteria="AC5" />
+      <test idea="Test tilemap optimization reduces draw calls and improves performance" acceptance-criteria="AC3" />
+      <test idea="Test tileset configuration integration for tile selection and variations" acceptance-criteria="AC4" />
+      <test idea="Test error handling for invalid tilemap setup and null references" acceptance-criteria="Validation" />
+      <test idea="Test memory usage stays under 25MB during rendering operations" acceptance-criteria="Performance" />
+    </ideas>
+  </tests>
+</story-context>

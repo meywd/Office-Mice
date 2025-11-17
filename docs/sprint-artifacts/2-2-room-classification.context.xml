@@ -1,0 +1,91 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2</storyId>
+    <title>Room Classification System</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/2-2-room-classification.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>designer</asA>
+    <iWant>automatic room type classification</iWant>
+    <soThat>maps have logical area distribution</soThat>
+    <tasks>1. Define RoomType enum with all room types
+2. Implement RoomClassifier class
+3. Create classification rule system
+4. Add configurable distribution tables
+5. Implement room type validation
+6. Add designer override support
+7. Create classification tests</tasks>
+  </story>
+
+  <acceptanceCriteria>Given BSP has generated room boundaries
+When room classification system processes map
+Then RoomType enum includes Office, Conference, BreakRoom, Storage, Lobby, ServerRoom, Security, BossRoom
+And automatic classification assigns types based on size, position, and depth
+And room type distribution follows configurable rules
+And visual differentiation between room types is supported
+And minimum size requirements are enforced for each room type</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Office-Mice - Epic Breakdown" section="Epic 2: Core Generation Engine" snippet="Epic 2: Core Generation Engine - Goal: Implement the BSP room generation and A* corridor connectivity algorithms that create the basic map structure. This epic delivers the ability to generate connected room layouts." />
+      <doc path="docs/epics.md" title="Office-Mice - Epic Breakdown" section="Story 2.2: Room Classification System" snippet="As a designer, I want automatic room type classification so that maps have logical area distribution. Given BSP has generated room boundaries, When the room classification system processes the map, Then RoomType enum includes Office, Conference, BreakRoom, Storage, Lobby, ServerRoom, Security, BossRoom." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Core System Components - BSP Generation System" snippet="BSPGenerator class with rule-based logic. Create configurable distribution tables. Add validation for room type requirements. Support designer overrides for specific room placements." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Data Architecture - Core Data Models" snippet="RoomData struct exists with position, size, type properties. RoomClassification enum for content population determines spawn density, resource placement, template selection." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Interface Contracts - Core Interfaces" snippet="IRoomGenerator interface exists for room creation abstraction. IMapGenerator interface for generation pipeline abstraction." />
+    </docs>
+    <code>
+      <code path="Assets/Scripts/MapGeneration/Data/RoomClassification.cs" kind="enum" symbol="RoomClassification" lines="7-19" reason="Existing room classification enum that needs to be extended with new room types for office environment" />
+      <code path="Assets/Scripts/MapGeneration/Data/RoomData.cs" kind="class" symbol="RoomData" lines="14-274" reason="Core room data structure with classification field that RoomClassifier will populate" />
+      <code path="Assets/Scripts/MapGeneration/Generators/BSPGenerator.cs" kind="class" symbol="BSPGenerator" lines="16-322" reason="Existing BSP generator that creates rooms and has placeholder ClassifyRooms method that needs implementation" />
+      <code path="Assets/Scripts/MapGeneration/Generators/BSPGenerator.cs" kind="method" symbol="ClassifyRooms" lines="126-138" reason="Placeholder method in BSPGenerator that needs to be replaced with actual RoomClassifier implementation" />
+      <code path="Assets/Scripts/MapGeneration/Interfaces/IRoomGenerator.cs" kind="interface" symbol="IRoomGenerator" lines="11-81" reason="Interface contract that includes ClassifyRooms method which RoomClassifier must implement" />
+      <code path="Assets/Scripts/MapGeneration/Configuration/RoomTemplate.cs" kind="class" symbol="RoomTemplate" lines="14-200" reason="ScriptableObject for room type configurations that RoomClassifier will use for template-based classification" />
+      <code path="Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs" kind="class" symbol="MapGenerationSettings" lines="176" reason="Configuration class that needs to include room classification settings and distribution tables" />
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.2d.tilemap" version="1.0.0" reason="For tilemap rendering of different room types" />
+        <package name="com.unity.test-framework" version="1.4.5" reason="For unit testing room classification logic" />
+        <package name="com.unity.test-framework.performance" version="3.0.3" reason="For performance testing classification algorithms" />
+      </unity>
+      <external>
+        <package name="com.h8man.2d.navmeshplus" version="master" reason="For navigation mesh generation in classified rooms" />
+      </external>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="interface" description="Must implement IRoomGenerator.ClassifyRooms method contract" />
+    <constraint type="performance" description="Classification must complete within 50ms for 100-room maps" />
+    <constraint type="data" description="Must use existing RoomData.RoomClassification field, not create new enum" />
+    <constraint type="configuration" description="Must use ScriptableObject-based configuration system for room type rules" />
+    <constraint type="validation" description="Must enforce minimum size requirements for each room type" />
+    <constraint type="testing" description="Must achieve 100% test coverage for classification logic" />
+    <constraint type="serialization" description="Room classifications must be Unity-serializable" />
+    <constraint type="extensibility" description="Must support designer override system for specific room placements" />
+  </constraints>
+  <interfaces>
+    <interface name="IRoomGenerator.ClassifyRooms" kind="method signature" signature="List&lt;RoomData&gt; ClassifyRooms(List&lt;RoomData&gt; rooms, MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/IRoomGenerator.cs" />
+    <interface name="RoomTemplate.IsCompatibleWithClassification" kind="method signature" signature="bool IsCompatibleWithClassification(RoomClassification classification)" path="Assets/Scripts/MapGeneration/Configuration/RoomTemplate.cs" />
+    <interface name="MapGenerationSettings.GetRandomRoomTemplate" kind="method signature" signature="RoomTemplate GetRandomRoomTemplate(RoomClassification classification, System.Random random = null)" path="Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs" />
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with separate EditMode and PlayMode assemblies. Use MapGenerationTestDataFactory for reproducible test scenarios. Mock implementations exist for all interface contracts. Tests must validate classification accuracy, performance targets, and edge cases.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Generators/ for unit tests, Assets/Tests/EditMode/MapGeneration/Integration/ for integration tests, Assets/Tests/PlayMode/MapGeneration/ for runtime tests</locations>
+    <ideas>
+      <test idea="Test room classification based on size - small rooms (&lt;20 tiles) should be Storage, medium (20-50) should be Office, large (&gt;50) should be Conference" ac="AC3, AC4" />
+      <test idea="Test room classification based on position - rooms near map center should be Lobby, edge rooms should be Security" ac="AC4" />
+      <test idea="Test room classification based on BSP depth - shallow depth rooms should be BossRoom, deep rooms should be ServerRoom" ac="AC4" />
+      <test idea="Test configurable distribution rules - verify room type percentages match configuration" ac="AC5" />
+      <test idea="Test minimum size enforcement - verify rooms smaller than type requirements are rejected or reclassified" ac="AC7" />
+      <test idea="Test designer override system - verify manually assigned room types are preserved" ac="Technical Notes" />
+      <test idea="Test performance with 100-room maps - ensure classification completes under 50ms" ac="Performance requirements" />
+      <test idea="Test visual differentiation - verify different room types get different tile patterns" ac="AC6" />
+    </ideas>
+  </tests>
+</story-context>
