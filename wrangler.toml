@@ -30,7 +30,5 @@ GAME_VERSION = "1.0.0"
 command = ""
 # No build command needed - Unity builds separately
 
-# Browser caching for static assets
-[site]
-# Serve index.html for root requests
-# This ensures your Unity game loads correctly
+# Browser caching headers for better performance
+# Note: Using [assets] configuration above instead of legacy [site]
