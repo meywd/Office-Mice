@@ -1,0 +1,143 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.1</storyId>
+    <title>BSP Algorithm Implementation</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/2-1-bsp-algorithm.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a player</asA>
+    <iWant>varied room layouts</iWant>
+    <soThat>each map feels unique and replayable</soThat>
+    <tasks>1. [ ] Implement BSPNode recursive splitting
+2. [ ] Add room creation from leaf nodes
+3. [ ] Implement deterministic seed-based RNG
+4. [ ] Add Gizmo visualization system
+5. [ ] Create BSP algorithm performance tests
+6. [ ] Add room size validation
+7. [ ] Implement tree traversal utilities</tasks>
+  </story>
+
+  <acceptanceCriteria>- **Given** a map generation request is initiated
+- **When** BSP algorithm executes
+- **Then** recursive space partitioning creates rectangular room boundaries
+- **And** configurable min/max room sizes are respected
+- **And** tree structure visualization is available with Gizmos for debugging
+- **And** deterministic generation produces identical layouts for same seed
+- **And** O(n log n) time complexity is maintained for performance</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Office-Mice - Epic Breakdown</title>
+        <section>Story 2.1: BSP Algorithm Implementation</section>
+        <snippet>As a player, I want varied room layouts so that each map feels unique and replayable. Implement BSPNode class with recursive splitting logic. Add Gizmo visualization for editor debugging. Ensure deterministic random number generation using seeds. Validate performance with large room counts.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ARCHITECTURE.md</path>
+        <title>Office-Mice Procedural Map Generation - System Architecture</title>
+        <section>BSP Generation System</section>
+        <snippet>public class BSPGenerator : IRoomGenerator { public List&lt;RoomData&gt; GenerateRooms(MapGenerationSettings settings) { var root = new BSPNode(settings.mapBounds); root.Split(settings.minRoomSize, settings.maxRoomSize, settings.seed); var leaves = root.GetLeaves(); var rooms = new List&lt;RoomData&gt;(); foreach (var leaf in leaves) { var room = CreateRoomFromLeaf(leaf, settings); rooms.Add(room); } return rooms; } }</snippet>
+      </doc>
+      <doc>
+        <path>docs/PHASE_1_PART1_GENERATION_ALGORITHMS.md</path>
+        <title>Phase 1 Part 1: Core Generation Algorithms Architecture</title>
+        <section>BSP Algorithm Architecture</section>
+        <snippet>BSP provides O(n log n) room generation with guaranteed rectangular rooms. Guaranteed connectivity through tree structure. Intuitive parameter tuning. Deterministic seed-based generation ensures reproducibility. Same seed = identical maps across runs.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Data/BSPNode.cs</path>
+        <kind>data</kind>
+        <symbol>BSPNode</symbol>
+        <lines>10-233</lines>
+        <reason>Existing BSPNode class with basic structure, Split() method, and tree traversal. Foundation for BSP algorithm implementation.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Interfaces/IRoomGenerator.cs</path>
+        <kind>interface</kind>
+        <symbol>IRoomGenerator</symbol>
+        <lines>11-81</lines>
+        <reason>Interface contract for room generation. Must implement GenerateRooms() methods with seed support for deterministic output.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs</path>
+        <kind>configuration</kind>
+        <symbol>BSPConfiguration</symbol>
+        <lines>312-361</lines>
+        <reason>Contains BSP parameters: MinPartitionSize, MaxDepth, SplitPreference, RoomSizeRatio. Must be used for configurable room generation.</reason>
+      </artifact>
+      <artifact>
+        <path>Assets/Tests/EditMode/MapGeneration/Performance/PerformanceBenchmark.cs</path>
+        <kind>test</kind>
+        <symbol>PerformanceBenchmark</symbol>
+        <lines>55-64</lines>
+        <reason>Performance testing framework with O(n log n) complexity targets. RoomGeneration target: 500ms max, 50MB max memory.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <unity>
+        <package>com.unity.test-framework</package>
+        <version>1.1.31</version>
+        <purpose>Unit testing framework for BSP algorithm validation</purpose>
+      </unity>
+      <unity>
+        <package>com.unity.performance.testing</package>
+        <version>2.0.0</version>
+        <purpose>Performance benchmarking for O(n log n) complexity validation</purpose>
+      </unity>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Must maintain O(n log n) time complexity for performance targets (500ms for 100 rooms)</constraint>
+    <constraint>Must use deterministic System.Random with explicit seed (not Unity Random)</constraint>
+    <constraint>Must support both horizontal and vertical splits with configurable preferences</constraint>
+    <constraint>Must respect min/max room sizes from BSPConfiguration</constraint>
+    <constraint>Must provide Gizmo visualization for Unity Scene view debugging</constraint>
+    <constraint>Must ensure 100% deterministic output for identical seeds across runs</constraint>
+    <constraint>Must integrate with existing IRoomGenerator interface contract</constraint>
+    <constraint>Must pass all performance benchmarks in PerformanceBenchmark class</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>IRoomGenerator</name>
+      <kind>class interface</kind>
+      <signature>List&lt;RoomData&gt; GenerateRooms(MapGenerationSettings settings, int seed)</signature>
+      <path>Assets/Scripts/MapGeneration/Interfaces/IRoomGenerator.cs</path>
+    </interface>
+    <interface>
+      <name>BSPNode.Split()</name>
+      <kind>method</kind>
+      <signature>public bool Split(int minRoomSize, int maxDepth)</signature>
+      <path>Assets/Scripts/MapGeneration/Data/BSPNode.cs</path>
+    </interface>
+    <interface>
+      <name>BSPConfiguration</name>
+      <kind>configuration class</kind>
+      <signature>public int MinPartitionSize, MaxDepth, SplitPreference, RoomSizeRatio</signature>
+      <path>Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Unity Test Framework with Performance Testing API. Tests must validate deterministic output (same seed = identical rooms), O(n log n) complexity, and room size constraints. Use PerformanceBenchmark.MeasurePerformanceWithGC() for complexity validation.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Data/BSPNodeTests.cs, Assets/Tests/EditMode/MapGeneration/Performance/PerformanceBenchmark.cs</locations>
+    <ideas>
+      <test mappedTo="AC1">TestDeterministicGeneration - Generate rooms with same seed twice, compare results byte-by-byte</test>
+      <test mappedTo="AC2">TestRoomSizeConstraints - Generate rooms, validate all within min/max bounds from BSPConfiguration</test>
+      <test mappedTo="AC3">TestGizmoVisualization - Enable gizmos, verify tree structure visible in Scene view</test>
+      <test mappedTo="AC4">TestONLogNComplexity - Use PerformanceBenchmark to validate 100-room generation &lt; 500ms</test>
+      <test mappedTo="AC5">TestSplitDirections - Verify both horizontal and vertical splits occur based on configuration</test>
+      <test mappedTo="AC6">TestTreeTraversal - Validate GetLeaves() returns correct count and structure</test>
+      <test mappedTo="AC7">TestLargeRoomCounts - Generate 500-room maps, validate performance &lt; 5 seconds</test>
+    </ideas>
+  </tests>
+</story-context>

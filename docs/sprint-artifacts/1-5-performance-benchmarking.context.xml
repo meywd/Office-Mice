@@ -1,0 +1,117 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>5</storyId>
+    <title>Performance Benchmarking Infrastructure</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/1-5-performance-benchmarking.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>performance engineer</asA>
+    <iWant>benchmarking tools</iWant>
+    <soThat>I can prevent performance regressions and validate optimization efforts</soThat>
+    <tasks>1. Create performance benchmark test suite
+2. Implement memory usage tracking
+3. Add GC pressure monitoring
+4. Create automated performance regression tests
+5. Set up CI/CD performance validation
+6. Create performance reporting dashboard
+7. Document performance targets and thresholds</tasks>
+  </story>
+
+  <acceptanceCriteria>- Given system must meet performance targets
+- When performance benchmarking is implemented
+- Then baseline performance metrics exist for 100-room maps
+- And automated performance tests validate generation time limits
+- And memory usage tracking monitors allocation patterns
+- And GC pressure monitoring ensures &lt;500KB/frame garbage collection
+- And performance reports are generated for CI/CD validation</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 1: Foundation & Data Architecture" snippet="Epic 1 delivers foundational value with Story 1.5 focusing on performance benchmarking infrastructure. This story provides the tools to prevent performance regressions and validate optimization efforts across the map generation system." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Performance Architecture" snippet="Object pooling system with generic ObjectPool&lt;T&gt; class and specialized pools. Coroutine-based generation with frame-time budgeting maintains 16.67ms per frame performance. Performance monitoring with ProductionMonitor class for runtime analytics." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="CI/CD Pipeline" snippet="GitHub Actions workflow with Unity Test Runner integration. Automated testing, WebGL builds, and Cloudflare deployment. Performance benchmarking validation in CI/CD pipeline with regression detection." />
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="FR12: Performance Requirements" snippet="Total generation time: &lt;3 seconds (100-room map). Gameplay performance: 60 FPS maintained. Memory usage: &lt;200MB runtime. GC pressure: &lt;500KB per frame. Loading time: &lt;5 seconds with progress bar." />
+      <doc path="docs/sprint-artifacts/1-4-test-framework-setup.context.xml" title="Test Framework Context" section="Performance Testing" snippet="Existing performance benchmark infrastructure with PerformanceBenchmark class. Unity Test Framework integration with Performance category tests. CI/CD pipeline includes performance test execution and artifact collection." />
+    </docs>
+    <code>
+      <code path="Assets/Tests/EditMode/MapGeneration/Performance/PerformanceBenchmark.cs" kind="performance-test" symbol="PerformanceBenchmark" lines="1-464" reason="Comprehensive performance testing infrastructure with measurement utilities, regression detection, and stress testing capabilities" />
+      <code path="Assets/Tests/EditMode/MapGeneration/Base/BaseTestFixture.cs" kind="test-base" symbol="BaseTestFixture" lines="109-140" reason="Performance testing helpers including AssertPerformance methods for time-based validation" />
+      <code path="Assets/Tests/Editor/TestRunner.cs" kind="test-runner" symbol="TestRunner" lines="117-220" reason="Unity Editor menu integration for running performance tests and exporting metrics" />
+      <code path="Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs" kind="configuration" symbol="PerformanceSettings" lines="522-580" reason="Performance optimization settings configuration for generation parameters" />
+      <code path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" kind="interface" symbol="PathfindingStats" lines="120-140" reason="Performance statistics structure for pathfinding operations" />
+      <code path="Assets/Tests/EditMode/MapGeneration/Factories/MapGenerationTestDataFactory.cs" kind="test-factory" symbol="CreatePerformanceTestSettings" lines="153-170" reason="Test data factory for performance-specific test scenarios with large map configurations" />
+      <code path="Assets/Tests/EditMode/MapGeneration/Mocks/MockPathfinder.cs" kind="mock" symbol="GetPerformanceStats" lines="240-250" reason="Mock implementation providing performance statistics for testing" />
+      <code path="Assets/Scripts/MapGeneration/Configuration/Editors/MapGenerationSettingsEditor.cs" kind="editor" symbol="PerformanceSettings" lines="102-120" reason="Unity Editor integration for performance settings configuration" />
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.test-framework" version="1.4.5" usage="Unity Test Framework for EditMode and PlayMode performance testing" />
+        <package name="com.unity.testtools.codecoverage" version="1.2.5" usage="Code coverage analysis for performance test validation" />
+        <package name="com.unity.2d.tilemap" version="1.0.0" usage="Tilemap rendering system for performance testing of visual output" />
+        <package name="com.h8man.2d.navmeshplus" version="master" usage="2D NavMesh generation for performance testing of AI navigation" />
+      </unity>
+      <frameworks>
+        <framework name="Unity Performance Testing" version="available" usage="Performance benchmarking and regression testing framework (needs integration)" />
+        <framework name="Unity Profiler" version="built-in" usage="Runtime performance profiling and memory analysis" />
+        <framework name="NUnit" version="3.x" usage="Unit testing framework with performance category support" />
+        <framework name="Unity Test Framework" version="1.4.5" usage="Unity-specific testing utilities for performance validation" />
+      </frameworks>
+      <testing-tools>
+        <tool name="Unity Test Runner" usage="Integrated test execution with Performance category filtering" />
+        <tool name="GitHub Actions" usage="CI/CD pipeline for automated performance test execution" />
+        <tool name="Unity Profiler" usage="Memory allocation and GC pressure analysis" />
+        <tool name="Custom Performance Benchmark" usage="Existing performance measurement utilities and regression detection" />
+      </testing-tools>
+      <ci-cd>
+        <pipeline name="GitHub Actions" file=".github/workflows/test.yml" usage="Automated performance test execution in CI/CD with artifact collection" />
+        <pipeline name="Performance Test Job" usage="Dedicated performance test execution with category filtering and result upload" />
+        <pipeline name="Coverage Analysis" usage="Code coverage validation for performance test components" />
+      </ci-cd>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance-targets" description="Generation time &lt;3 seconds for 100-room maps, 60 FPS gameplay, &lt;200MB memory usage, &lt;500KB/frame GC pressure" />
+    <constraint type="unity-version" description="Unity 6000.2.12f1 (Unity 6.0 LTS) - Performance testing must be compatible with Unity 6" />
+    <constraint type="test-framework" description="Unity Test Framework with Performance category integration and CI/CD automation" />
+    <constraint type="memory-profiling" description="GC pressure monitoring with &lt;500KB/frame threshold and allocation pattern tracking" />
+    <constraint type="regression-detection" description="Automated performance regression detection with baseline comparison and tolerance thresholds" />
+    <constraint type="ci-cd-integration" description="Performance tests must execute in GitHub Actions workflow with artifact collection and reporting" />
+    <constraint type="benchmark-scenarios" description="Performance tests for different map sizes (25, 50, 100, 200 rooms) with linear scaling validation" />
+    <constraint type="frame-time-budgeting" description="Frame-time budgeting validation maintaining 16.67ms per frame for 60 FPS target" />
+    <constraint type="reporting" description="Performance reports generation for CI/CD validation with metrics export and trend analysis" />
+    <constraint type="unity-performance-api" description="Integration with Unity Performance Testing API for standardized benchmark measurement" />
+  </constraints>
+  <interfaces>
+    <interface name="IMapGenerator" kind="generation-pipeline" signature="IEnumerator&lt;MapData&gt; GenerateMapAsync(MapGenerationSettings settings, int seed = 0)" path="Assets/Scripts/MapGeneration/Interfaces/IMapGenerator.cs" description="Main generation pipeline requiring performance testing for &lt;3 second generation time" />
+    <interface name="IRoomGenerator" kind="room-creation" signature="List&lt;RoomData&gt; GenerateRooms(MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/IRoomGenerator.cs" description="Room generation using BSP algorithm requiring &lt;500ms performance validation" />
+    <interface name="ICorridorGenerator" kind="pathfinding" signature="List&lt;CorridorData&gt; ConnectRooms(List&lt;RoomData&gt; rooms, MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/ICorridorGenerator.cs" description="Corridor generation requiring &lt;200ms performance validation" />
+    <interface name="IContentPopulator" kind="content-population" signature="void PopulateContent(MapData map, BiomeConfiguration biome)" path="Assets/Scripts/MapGeneration/Interfaces/IContentPopulator.cs" description="Content population requiring &lt;300ms performance validation" />
+    <interface name="IPathfinder" kind="pathfinding" signature="PathfindingStats GetPerformanceStats()" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="Pathfinding with performance statistics for regression detection" />
+    <interface name="ITileRenderer" kind="rendering" signature="void RenderMap(MapData map, Tilemap[] tilemaps)" path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs" description="Tile rendering requiring &lt;400ms performance validation" />
+    <interface name="IAssetLoader" kind="asset-management" signature="TileBase LoadTile(string tileName)" path="Assets/Scripts/MapGeneration/Interfaces/IAssetLoader.cs" description="Asset loading requiring &lt;100ms performance validation and caching analysis" />
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with Performance category integration. Custom PerformanceBenchmark class with measurement utilities, regression detection, and stress testing. Memory profiling with GC pressure monitoring (&lt;500KB/frame). Frame-time budgeting validation (16.67ms for 60 FPS). Automated baseline comparison with tolerance thresholds. CI/CD integration with GitHub Actions performance test execution. Performance metrics export and trend analysis. Multi-size benchmark scenarios (25, 50, 100, 200 rooms) with linear scaling validation.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Performance/PerformanceBenchmark.cs for comprehensive performance testing. Assets/Tests/EditMode/MapGeneration/Base/BaseTestFixture.cs for performance testing utilities. Assets/Tests/Editor/TestRunner.cs for Unity Editor performance test integration. GitHub Actions workflow .github/workflows/test.yml with performance-tests job for CI/CD automation. Performance test artifacts uploaded to test-results-performance/ with 30-day retention.</locations>
+    <ideas>
+      <test idea="Unity Performance Testing API integration for standardized benchmark measurement" acceptance-criteria="AC1" />
+      <test idea="Baseline performance metrics establishment for 100-room maps" acceptance-criteria="AC1" />
+      <test idea="Automated performance regression tests with tolerance thresholds" acceptance-criteria="AC2" />
+      <test idea="Memory usage tracking with allocation pattern monitoring" acceptance-criteria="AC3" />
+      <test idea="GC pressure monitoring ensuring &lt;500KB/frame garbage collection" acceptance-criteria="AC4" />
+      <test idea="Performance reports generation for CI/CD validation" acceptance-criteria="AC5" />
+      <test idea="Benchmark scenarios for different map sizes (25, 50, 100, 200 rooms)" acceptance-criteria="AC1" />
+      <test idea="Frame time budgeting validation maintaining 16.67ms per frame" acceptance-criteria="AC4" />
+      <test idea="Performance regression detection with baseline comparison" acceptance-criteria="AC2" />
+      <test idea="CI/CD pipeline integration with automated performance test execution" acceptance-criteria="AC5" />
+      <test idea="Memory profiling automation with allocation pattern analysis" acceptance-criteria="AC3" />
+      <test idea="Performance dashboard creation for metrics visualization and trend analysis" acceptance-criteria="AC5" />
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,145 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>2</storyId>
+    <title>ScriptableObject Configuration System</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/1-2-scriptableObject-configuration.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>designer</asA>
+    <iWant>configuration assets</iWant>
+    <soThat>I can tweak generation parameters without code changes</soThat>
+    <tasks>1. [ ] Create RoomTemplate ScriptableObject
+2. [ ] Create BiomeConfiguration ScriptableObject
+3. [ ] Create SpawnTableConfiguration ScriptableObject
+4. [ ] Create TilesetConfiguration ScriptableObject
+5. [ ] Create MapGenerationSettings ScriptableObject
+6. [ ] Add validation methods and editor extensions
+7. [ ] Create test assets for each configuration type</tasks>
+  </story>
+
+  <acceptanceCriteria>- **Given** I want to modify map generation settings
+- **When** I use the ScriptableObject configuration system
+- **Then** RoomTemplate ScriptableObject exists with tile/furniture configurations
+- **And** BiomeConfiguration ScriptableObject exists for theming options
+- **And** SpawnTableConfiguration ScriptableObject exists for enemy wave settings
+- **And** TilesetConfiguration ScriptableObject exists for asset mapping
+- **And** all configurations are editable in Unity Inspector with validation</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Office-Mice - Epic Breakdown</title>
+        <section>Epic 1: Foundation & Data Architecture</section>
+        <snippet>Story 1.2: ScriptableObject Configuration System - As a designer, I want configuration assets so that I can tweak generation parameters without code changes. Create ScriptableObject classes with [CreateAssetMenu] attributes. Include validation logic to prevent invalid configurations. Design for easy designer workflow with clear parameter names and tooltips.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ARCHITECTURE.md</path>
+        <title>Office-Mice Procedural Map Generation - System Architecture</title>
+        <section>Data Architecture - Configuration System</section>
+        <snippet>Use ScriptableObjects for all configuration. Designer-friendly workflow, Unity serialization support, Runtime asset loading, Easy validation and debugging. MapGenerationSettings ScriptableObject with map parameters, corridor settings, and generation settings.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/1-1-core-data-models.md</path>
+        <title>Story 1.1: Core Data Models Implementation</title>
+        <section>Prerequisites for Story 1.2</section>
+        <snippet>Successfully implemented all core data models according to PHASE_0_PART1_DATA_ARCHITECTURE.md specifications. Created comprehensive validation system with ValidationResult class. Implemented proper Unity serialization with [SerializeField] attributes. Added extensive unit tests with >95% code coverage.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <code>
+        <path>Assets/Scripts/MapGeneration/Data/MapData.cs</path>
+        <kind>data-model</kind>
+        <symbol>MapData</symbol>
+        <lines>1-503</lines>
+        <reason>Root data structure that will consume ScriptableObject configurations for map generation parameters</reason>
+      </code>
+      <code>
+        <path>Assets/Scripts/MapGeneration/Data/RoomData.cs</path>
+        <kind>data-model</kind>
+        <symbol>RoomData</symbol>
+        <lines>1-200</lines>
+        <reason>Room data structure that will be populated using RoomTemplate ScriptableObject configurations</reason>
+      </code>
+      <code>
+        <path>Assets/Game/WaveSpawner.cs</path>
+        <kind>game-system</kind>
+        <symbol>WaveSpawner</symbol>
+        <lines>1-152</lines>
+        <reason>Existing enemy spawning system that SpawnTableConfiguration ScriptableObjects must integrate with</reason>
+      </code>
+      <code>
+        <path>Assets/Game/ObjectPooler.cs</path>
+        <kind>utility</kind>
+        <symbol>ObjectPooler</symbol>
+        <lines>1-87</lines>
+        <reason>Existing object pooling system that ScriptableObject configurations should leverage for performance</reason>
+      </code>
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.2d.tilemap" version="1.0.0" reason="Tilemap rendering for generated maps"/>
+        <package name="com.unity.2d.tilemap.extras" version="https://github.com/Unity-Technologies/2d-extras.git#package" reason="Additional tilemap utilities for map generation"/>
+        <package name="com.h8man.2d.navmeshplus" version="https://github.com/h8man/NavMeshPlus.git#master" reason="2D NavMesh generation for AI navigation"/>
+      </unity>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Must use ScriptableObject pattern with [CreateAssetMenu] attributes for designer accessibility</constraint>
+    <constraint>All configurations must include validation methods to prevent invalid settings</constraint>
+    <constraint>Must integrate with existing WaveSpawner system using "Spawn Point" tag compatibility</constraint>
+    <constraint>Should leverage existing ObjectPooler for performance optimization</constraint>
+    <constraint>Must follow Unity serialization best practices with [SerializeField] attributes</constraint>
+    <constraint>Configuration assets should be designer-friendly with clear parameter names and tooltips</constraint>
+    <constraint>Must support nested configuration objects for complex settings</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>MapGenerationSettings</name>
+      <kind>ScriptableObject</kind>
+      <signature>public class MapGenerationSettings : ScriptableObject</signature>
+      <path>Assets/Scripts/MapGeneration/Configuration/MapGenerationSettings.cs</path>
+    </interface>
+    <interface>
+      <name>RoomTemplate</name>
+      <kind>ScriptableObject</kind>
+      <signature>public class RoomTemplate : ScriptableObject</signature>
+      <path>Assets/Scripts/MapGeneration/Configuration/RoomTemplate.cs</path>
+    </interface>
+    <interface>
+      <name>BiomeConfiguration</name>
+      <kind>ScriptableObject</kind>
+      <signature>public class BiomeConfiguration : ScriptableObject</signature>
+      <path>Assets/Scripts/MapGeneration/Configuration/BiomeConfiguration.cs</path>
+    </interface>
+    <interface>
+      <name>SpawnTableConfiguration</name>
+      <kind>ScriptableObject</kind>
+      <signature>public class SpawnTableConfiguration : ScriptableObject</signature>
+      <path>Assets/Scripts/MapGeneration/Configuration/SpawnTableConfiguration.cs</path>
+    </interface>
+    <interface>
+      <name>TilesetConfiguration</name>
+      <kind>ScriptableObject</kind>
+      <signature>public class TilesetConfiguration : ScriptableObject</signature>
+      <path>Assets/Scripts/MapGeneration/Configuration/TilesetConfiguration.cs</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with separate EditMode and PlayMode assemblies. Test data factories for reproducible scenarios. Mock implementations for all interface contracts. Validation testing for all ScriptableObject configurations. Integration tests with existing WaveSpawner and ObjectPooler systems.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Configuration/ - ScriptableObject configuration tests. Assets/Tests/EditMode/MapGeneration/Data/ - Core data model tests (existing). Assets/Tests/PlayMode/MapGeneration/Integration/ - Integration tests with existing systems.</locations>
+    <ideas>
+      <test ac="RoomTemplate ScriptableObject exists">Test RoomTemplate creation, validation, and furniture configuration loading</test>
+      <test ac="BiomeConfiguration ScriptableObject exists">Test biome theme application and tileset switching</test>
+      <test ac="SpawnTableConfiguration ScriptableObject exists">Test spawn table integration with existing WaveSpawner system</test>
+      <test ac="TilesetConfiguration ScriptableObject exists">Test tile asset loading and mapping functionality</test>
+      <test ac="Unity Inspector validation">Test custom editor validation and error display</test>
+    </ideas>
+  </tests>
+</story-context>

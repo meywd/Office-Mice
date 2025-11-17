@@ -1,0 +1,97 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>3</storyId>
+    <title>Interface Contracts Definition</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-17</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/home/meywd/Office-Mice/docs/sprint-artifacts/1-3-interface-contracts.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system architect</asA>
+    <iWant>clear interface contracts</iWant>
+    <soThat>components remain decoupled and testable</soThat>
+    <tasks>1. [ ] Define IMapGenerator interface
+2. [ ] Define IRoomGenerator interface
+3. [ ] Define ICorridorGenerator interface
+4. [ ] Define IContentPopulator interface
+5. [ ] Define supporting interfaces (ITileRenderer, IAssetLoader, IPathfinder)
+6. [ ] Create mock implementations for all interfaces
+7. [ ] Add comprehensive XML documentation</tasks>
+  </story>
+
+  <acceptanceCriteria>- Given generation system needs modular components
+- When interface contracts are implemented
+- Then IMapGenerator interface exists for generation pipeline abstraction
+- And IRoomGenerator interface exists for room creation abstraction
+- And ICorridorGenerator interface exists for pathfinding abstraction
+- And IContentPopulator interface exists for furniture/spawn abstraction
+- And all interfaces have mock implementations for testing</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 1: Foundation & Data Architecture" snippet="Epic 1 delivers foundational value (necessary infrastructure for greenfield project) with stories covering core data models, configuration systems, interface contracts, testing infrastructure, and performance benchmarking." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Interface Contracts" snippet="Core interfaces include IMapGenerator for generation pipeline abstraction, IRoomGenerator for room creation abstraction, ICorridorGenerator for pathfinding abstraction, and IContentPopulator for furniture/spawn abstraction. Supporting interfaces include IPathfinder, ITileRenderer, and IAssetLoader." />
+      <doc path="docs/ARCHITECTURE.md" title="System Architecture" section="Performance Architecture" snippet="Object pooling system with generic ObjectPool&lt;T&gt; class and specialized pools for A* nodes and furniture objects. Coroutine-based generation with frame-time budgeting maintains 16.67ms per frame performance." />
+      <doc path="docs/PRD.md" title="Product Requirements" section="Functional Requirements" snippet="FR1-FR12 define requirements for procedural office layout generation, room connectivity, classification, furniture placement, enemy spawns, resource distribution, biome themes, tilemap rendering, NavMesh generation, editor tools, serialization, and performance targets." />
+      <doc path="docs/PHASE_0_PART1_DATA_ARCHITECTURE.md" title="Data Architecture" section="Core Data Models" snippet="MapData, RoomData, CorridorData, and BSPNode classes form the foundational data structures with comprehensive validation, serialization support, and Unity integration." />
+    </docs>
+    <code>
+      <code path="Assets/Scripts/MapGeneration/Data/MapData.cs" kind="data-model" symbol="MapData" lines="1-503" reason="Core data structure representing complete procedurally generated map with rooms, corridors, and metadata" />
+      <code path="Assets/Scripts/MapGeneration/Data/RoomData.cs" kind="data-model" symbol="RoomData" lines="1-274" reason="Represents single room with spatial properties, connectivity, classification, and template assignment" />
+      <code path="Assets/Scripts/MapGeneration/Data/CorridorData.cs" kind="data-model" symbol="CorridorData" lines="1-359" reason="Represents corridor connecting two rooms with path data, shape detection, and geometric operations" />
+      <code path="Assets/Scripts/MapGeneration/Data/BSPNode.cs" kind="data-model" symbol="BSPNode" lines="1-233" reason="Binary Space Partitioning node for recursive room generation with tree structure and validation" />
+      <code path="Assets/Scripts/MapGeneration/Validation/ValidationResult.cs" kind="utility" symbol="ValidationResult" reason="Validation system used across all data models for error reporting and integrity checks" />
+      <code path="Assets/Tests/EditMode/MapGeneration/Data/MapDataTests.cs" kind="test" symbol="MapDataTests" lines="1-492" reason="Comprehensive test patterns showing data model usage, validation, and integration testing approaches" />
+    </code>
+    <dependencies>
+      <unity>
+        <package name="com.unity.2d.tilemap" version="1.0.0" usage="Tilemap rendering system for visual output" />
+        <package name="com.h8man.2d.navmeshplus" version="master" usage="2D NavMesh generation for AI navigation" />
+        <package name="com.unity.ai.navigation" version="2.0.9" usage="Navigation system integration" />
+        <package name="com.unity.2d.tilemap.extras" version="package" usage="Additional tilemap utilities and tools" />
+      </unity>
+      <frameworks>
+        <framework name="NUnit" version="3.x" usage="Unit testing framework with EditMode and PlayMode test assemblies" />
+        <framework name="Unity Test Framework" version="1.x" usage="Unity-specific testing utilities and runtime testing" />
+      </frameworks>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture" description="Interface-driven design with loose coupling through well-defined contracts" />
+    <constraint type="performance" description="All interfaces must support coroutine-based async operations for frame-time budgeting" />
+    <constraint type="testing" description="All interfaces must have mock implementations for comprehensive unit testing" />
+    <constraint type="unity" description="Interfaces must integrate with Unity's Tilemap, NavMeshPlus, and serialization systems" />
+    <constraint type="dependency-injection" description="Interfaces must support dependency injection patterns for modular component assembly" />
+    <constraint type="deterministic" description="Generation interfaces must support seed-based reproducible output" />
+    <constraint type="validation" description="All interface implementations must include comprehensive validation with ValidationResult" />
+    <constraint type="serialization" description="Interface outputs must be serializable using Unity's serialization system" />
+    <constraint type="object-pooling" description="Interfaces must support object pooling patterns to minimize GC pressure" />
+    <constraint type="extensibility" description="Interfaces must be designed for future plugin architecture support" />
+  </constraints>
+  <interfaces>
+    <interface name="IMapGenerator" kind="generation-pipeline" signature="IEnumerator&lt;MapData&gt; GenerateMapAsync(MapGenerationSettings settings, int seed = 0)" path="Assets/Scripts/MapGeneration/Interfaces/IMapGenerator.cs" description="Main generation pipeline abstraction coordinating all phases" />
+    <interface name="IRoomGenerator" kind="room-creation" signature="List&lt;RoomData&gt; GenerateRooms(MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/IRoomGenerator.cs" description="Room creation abstraction using BSP algorithm" />
+    <interface name="ICorridorGenerator" kind="pathfinding" signature="List&lt;CorridorData&gt; ConnectRooms(List&lt;RoomData&gt; rooms, MapGenerationSettings settings)" path="Assets/Scripts/MapGeneration/Interfaces/ICorridorGenerator.cs" description="Corridor generation using A* pathfinding" />
+    <interface name="IContentPopulator" kind="content-population" signature="void PopulateContent(MapData map, BiomeConfiguration biome)" path="Assets/Scripts/MapGeneration/Interfaces/IContentPopulator.cs" description="Furniture, spawn points, and resource placement" />
+    <interface name="IPathfinder" kind="pathfinding" signature="List&lt;Vector2Int&gt; FindPath(Vector2Int start, Vector2Int end, bool[,] obstacles)" path="Assets/Scripts/MapGeneration/Interfaces/IPathfinder.cs" description="A* pathfinding abstraction for corridor generation" />
+    <interface name="ITileRenderer" kind="rendering" signature="void RenderMap(MapData map, Tilemap[] tilemaps)" path="Assets/Scripts/MapGeneration/Interfaces/ITileRenderer.cs" description="Unity Tilemap rendering abstraction" />
+    <interface name="IAssetLoader" kind="asset-management" signature="TileBase LoadTile(string tileName)" path="Assets/Scripts/MapGeneration/Interfaces/IAssetLoader.cs" description="Asset loading and caching abstraction" />
+  </interfaces>
+  <tests>
+    <standards>Unity Test Framework with NUnit. EditMode tests for unit testing interfaces and mock implementations. PlayMode tests for integration testing. Comprehensive validation using ValidationResult system. Test data factories for reproducible scenarios. 90%+ code coverage requirement.</standards>
+    <locations>Assets/Tests/EditMode/MapGeneration/Interfaces/ for interface unit tests. Assets/Tests/EditMode/MapGeneration/Mocks/ for mock implementations. Assets/Tests/PlayMode/MapGeneration/Integration/ for end-to-end testing.</locations>
+    <ideas>
+      <test idea="IMapGenerator.GenerateMapAsync returns valid MapData" acceptance-criteria="AC1" />
+      <test idea="IRoomGenerator.GenerateRooms creates non-overlapping rooms" acceptance-criteria="AC2" />
+      <test idea="ICorridorGenerator.ConnectRooms ensures 100% connectivity" acceptance-criteria="AC3" />
+      <test idea="IContentPopulator.PopulateContent places valid furniture and spawns" acceptance-criteria="AC4" />
+      <test idea="All mock implementations implement interfaces correctly" acceptance-criteria="AC5" />
+      <test idea="Interface implementations support dependency injection" acceptance-criteria="AC1-AC4" />
+      <test idea="Async operations complete within frame-time budget" acceptance-criteria="AC1-AC4" />
+    </ideas>
+  </tests>
+</story-context>
