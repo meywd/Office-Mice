@@ -18,14 +18,27 @@ jobs:
         with:
           lfs: true
 
-      # Cache Unity Library folder
+      # Cache Unity Library folder for faster builds
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:
           path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-WebGL-6000.0.12f1-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
-            Library-
+            Library-WebGL-6000.0.12f1-
+            Library-WebGL-
+
+      # Cache additional Unity artifacts
+      - name: Cache Unity Packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            Library/PackageCache
+            Library/Bee
+          key: Unity-Packages-6000.0.12f1-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
+          restore-keys: |
+            Unity-Packages-6000.0.12f1-
+            Unity-Packages-
 
       # Free up disk space (Unity builds need lots of space)
       - name: Free Disk Space
