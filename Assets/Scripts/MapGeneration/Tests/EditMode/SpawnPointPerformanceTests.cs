@@ -298,7 +298,8 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
 
         private MapData CreateMapWithRooms(int roomCount)
         {
-            var map = new MapData(200, 200, 12345);
+            var map = new MapData(200, 200);
+            map.SetSeed(12345);
             var roomId = 1;
 
             for (int i = 0; i < roomCount; i++)
@@ -320,7 +321,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
                     RoomClassification.Storage,
                     RoomClassification.ServerRoom
                 };
-                room.SetClassification(classifications[UnityEngine.Random.Range(0, classifications.Length)]);
+                room.Classification = classifications[UnityEngine.Random.Range(0, classifications.Length)];
                 
                 map.AddRoom(room);
             }

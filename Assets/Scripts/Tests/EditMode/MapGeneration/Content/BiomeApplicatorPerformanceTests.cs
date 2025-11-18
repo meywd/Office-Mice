@@ -25,7 +25,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void ApplyBiomeToMap_10Rooms_PerformsWithinTarget()
         {
             // Arrange
@@ -46,7 +46,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void ApplyBiomeToMap_50Rooms_PerformsWithinTarget()
         {
             // Arrange
@@ -67,7 +67,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void ApplyBiomeToMap_100Rooms_PerformsWithinTarget()
         {
             // Arrange
@@ -88,7 +88,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void ApplyBiomeToMap_WithRoomTypeBiomes_PerformsWithinTarget()
         {
             // Arrange
@@ -110,7 +110,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void ApplyBiomeToMap_WithEnvironmentalEffects_PerformsWithinTarget()
         {
             // Arrange

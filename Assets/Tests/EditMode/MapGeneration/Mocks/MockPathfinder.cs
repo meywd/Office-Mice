@@ -251,7 +251,7 @@ namespace OfficeMice.MapGeneration.Mocks
 
         private List<Vector2Int> CreateDefaultMockPath()
         {
-            return new List<Vector2Int>
+            return new List<Vector2Int>()
             {
                 new Vector2Int(0, 0),
                 new Vector2Int(1, 0),

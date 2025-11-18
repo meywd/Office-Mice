@@ -107,7 +107,7 @@ namespace OfficeMice.MapGeneration.Tests
             var room = new RoomData(bounds);
 
             // Act
-            room.SetClassification(RoomClassification.BossRoom);
+            room.Classification = RoomClassification.BossRoom;
             room.SetOnCriticalPath(true);
             room.SetDistanceFromPlayerSpawn(25.5f);
             room.AssignTemplate("boss_room_template_001");
@@ -269,7 +269,7 @@ namespace OfficeMice.MapGeneration.Tests
             var bounds = new RectInt(10, 20, 15, 25);
             var room = new RoomData(bounds);
             room.RoomID = 5;
-            room.SetClassification(RoomClassification.BossRoom);
+            room.Classification = RoomClassification.BossRoom;
             room.SetOnCriticalPath(true);
             room.SetDistanceFromPlayerSpawn(50.0f);
             room.AssignTemplate("test_template");
@@ -322,7 +322,7 @@ namespace OfficeMice.MapGeneration.Tests
             var bounds = new RectInt(0, 0, 10, 10);
             var room = new RoomData(bounds);
             room.RoomID = 5;
-            room.SetClassification(RoomClassification.BossRoom);
+            room.Classification = RoomClassification.BossRoom;
             room.ConnectToRoom(1);
             room.ConnectToRoom(2);
             room.AddDoorway(new DoorwayPosition(new Vector2Int(5, 0), DoorwayDirection.North, 2));

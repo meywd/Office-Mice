@@ -88,14 +88,14 @@ namespace OfficeMice.MapGeneration.Tests
                 mapData.SetPlayerSpawn(rooms[0].GetRandomPoint());
                 
                 // Classify rooms
-                rooms[0].SetClassification(RoomClassification.PlayerStart);
+                rooms[0].Classification = RoomClassification.PlayerStart;
                 for (int i = 1; i < rooms.Count - 1; i++)
                 {
-                    rooms[i].SetClassification(RoomClassification.StandardRoom);
+                    rooms[i].Classification = RoomClassification.StandardRoom;
                 }
                 if (rooms.Count > 1)
                 {
-                    rooms[rooms.Count - 1].SetClassification(RoomClassification.BossRoom);
+                    rooms[rooms.Count - 1].Classification = RoomClassification.BossRoom;
                 }
             }
 
@@ -140,7 +140,7 @@ namespace OfficeMice.MapGeneration.Tests
             var originalMap = new MapData(42, new Vector2Int(50, 50));
             
             var room = new RoomData(new RectInt(10, 10, 15, 20));
-            room.SetClassification(RoomClassification.BossRoom);
+            room.Classification = RoomClassification.BossRoom;
             room.AddDoorway(new DoorwayPosition(new Vector2Int(15, 10), DoorwayDirection.North, 2));
             
             var corridor = new CorridorData(0, 1, new Vector2Int(15, 10), new Vector2Int(25, 30));

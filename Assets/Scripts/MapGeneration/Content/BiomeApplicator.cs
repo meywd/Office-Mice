@@ -20,7 +20,7 @@ namespace OfficeMice.MapGeneration.Content
         #region Private Fields
 
         private readonly IAssetLoader _assetLoader;
-        private readonly System.Random _random;
+        private System.Random _random;
         private int _seed;
         
         // Applied biome tracking

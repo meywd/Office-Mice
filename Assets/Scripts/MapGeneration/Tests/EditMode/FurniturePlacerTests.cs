@@ -300,15 +300,16 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
 
         private MapData CreateTestMap()
         {
-            var map = new MapData(100, 100, 12345);
+            var map = new MapData(100, 100);
+            map.SetSeed(12345);
             
             // Add test rooms
             var rooms = new List<RoomData>
             {
-                new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1, SetClassification(RoomClassification.Office) },
-                new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2, SetClassification(RoomClassification.Conference) },
-                new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3, SetClassification(RoomClassification.BreakRoom) },
-                new RoomData(new RectInt(30, 30, 8, 8)) { RoomID = 4, SetClassification(RoomClassification.Storage) }
+                new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1, Classification = RoomClassification.Office },
+                new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2, Classification = RoomClassification.Conference },
+                new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3, Classification = RoomClassification.BreakRoom },
+                new RoomData(new RectInt(30, 30, 8, 8)) { RoomID = 4, Classification = RoomClassification.Storage }
             };
 
             foreach (var room in rooms)

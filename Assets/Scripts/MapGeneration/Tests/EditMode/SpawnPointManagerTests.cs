@@ -297,7 +297,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         {
             // Arrange
             var room = new RoomData(new RectInt(0, 0, 10, 10));
-            room.AddDoorway(new DoorwayPosition(new Vector2Int(5, 0), 1, Direction.North));
+            room.AddDoorway(new DoorwayPosition(new Vector2Int(5, 0), 1, DoorwayDirection.North));
             var furniture = new List<FurnitureData>();
 
             // Act
@@ -354,23 +354,24 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
 
         private MapData CreateTestMap()
         {
-            var map = new MapData(100, 100, 12345);
+            var map = new MapData(100, 100);
+            map.SetSeed(12345);
             
             var rooms = new List<RoomData>
             {
-                new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1, SetClassification(RoomClassification.Office) },
-                new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2, SetClassification(RoomClassification.Conference) },
-                new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3, SetClassification(RoomClassification.BreakRoom) },
-                new RoomData(new RectInt(30, 30, 8, 8)) { RoomID = 4, SetClassification(RoomClassification.Storage) },
-                new RoomData(new RectInt(50, 10, 10, 10)) { RoomID = 5, SetClassification(RoomClassification.ServerRoom) }
+                new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1, Classification = RoomClassification.Office },
+                new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2, Classification = RoomClassification.Conference },
+                new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3, Classification = RoomClassification.BreakRoom },
+                new RoomData(new RectInt(30, 30, 8, 8)) { RoomID = 4, Classification = RoomClassification.Storage },
+                new RoomData(new RectInt(50, 10, 10, 10)) { RoomID = 5, Classification = RoomClassification.ServerRoom }
             };
 
             // Add doorways to rooms
-            rooms[0].AddDoorway(new DoorwayPosition(new Vector2Int(14, 10), 1, Direction.South));
-            rooms[1].AddDoorway(new DoorwayPosition(new Vector2Int(36, 10), 2, Direction.South));
-            rooms[2].AddDoorway(new DoorwayPosition(new Vector2Int(13, 30), 1, Direction.North));
-            rooms[3].AddDoorway(new DoorwayPosition(new Vector2Int(34, 30), 1, Direction.North));
-            rooms[4].AddDoorway(new DoorwayPosition(new Vector2Int(55, 10), 2, Direction.South));
+            rooms[0].AddDoorway(new DoorwayPosition(new Vector2Int(14, 10), 1, DoorwayDirection.South));
+            rooms[1].AddDoorway(new DoorwayPosition(new Vector2Int(36, 10), 2, DoorwayDirection.South));
+            rooms[2].AddDoorway(new DoorwayPosition(new Vector2Int(13, 30), 1, DoorwayDirection.North));
+            rooms[3].AddDoorway(new DoorwayPosition(new Vector2Int(34, 30), 1, DoorwayDirection.North));
+            rooms[4].AddDoorway(new DoorwayPosition(new Vector2Int(55, 10), 2, DoorwayDirection.South));
 
             foreach (var room in rooms)
             {

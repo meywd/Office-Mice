@@ -24,7 +24,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void DistributeResources_10Rooms_PerformsWithinTarget()
         {
             // Arrange
@@ -44,7 +44,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void DistributeResources_50Rooms_PerformsWithinTarget()
         {
             // Arrange
@@ -64,7 +64,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void DistributeResources_100Rooms_PerformsWithinTarget()
         {
             // Arrange
@@ -84,7 +84,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         [Test]
-        [Performance]
+        [Category("Performance")]
         public void DistributeResources_WithFurniture_PerformsWithinTarget()
         {
             // Arrange
