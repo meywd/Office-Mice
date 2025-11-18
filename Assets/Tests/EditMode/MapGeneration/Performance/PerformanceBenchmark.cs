@@ -851,7 +851,5 @@ namespace OfficeMice.MapGeneration.Performance
         }
 
         #endregion
-
-        #endregion
     }
 }

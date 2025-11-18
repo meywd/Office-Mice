@@ -1,4 +1,5 @@
 using System;
+using OfficeMice.MapGeneration.Data;
 
 namespace OfficeMice.MapGeneration.Serialization
 {

@@ -138,8 +138,8 @@ namespace OfficeMice.MapGeneration.Pathfinding
                 var next = path[i + 1];
                 
                 // Calculate turn angle
-                var dir1 = (current - prev).normalized;
-                var dir2 = (next - current).normalized;
+                var dir1 = ((Vector2)(current - prev)).normalized;
+                var dir2 = ((Vector2)(next - current)).normalized;
                 float angle = Mathf.Acos(Vector2.Dot(dir1, dir2));
                 
                 if (angle > maxAngleRad)
@@ -328,21 +328,26 @@ namespace OfficeMice.MapGeneration.Pathfinding
         {
             float t2 = t * t;
             float t3 = t2 * t;
-            
+
+            Vector2 v0 = p0;
+            Vector2 v1 = p1;
+            Vector2 v2 = p2;
+            Vector2 v3 = p3;
+
             return 0.5f * (
-                (2f * p1) +
-                (-p0 + p2) * t +
-                (2f * p0 - 5f * p1 + 4f * p2 - p3) * t2 +
-                (-p0 + 3f * p1 - 3f * p2 + p3) * t3
+                (2f * v1) +
+                (-v0 + v2) * t +
+                (2f * v0 - 5f * v1 + 4f * v2 - v3) * t2 +
+                (-v0 + 3f * v1 - 3f * v2 + v3) * t3
             );
         }
         
-        private static Vector2Int? FindSmoothedPoint(Vector2Int prev, Vector2Int current, Vector2Int next, 
+        private static Vector2Int? FindSmoothedPoint(Vector2Int prev, Vector2Int current, Vector2Int next,
             bool[,] obstacles, float maxAngleRad)
         {
-            var dir1 = (current - prev).normalized;
-            var dir2 = (next - current).normalized;
-            
+            var dir1 = ((Vector2)(current - prev)).normalized;
+            var dir2 = ((Vector2)(next - current)).normalized;
+
             // Calculate the bisector direction
             var bisector = (dir1 + dir2).normalized;
             
@@ -354,8 +359,8 @@ namespace OfficeMice.MapGeneration.Pathfinding
                 if (IsValidPosition(candidate, obstacles))
                 {
                     // Check if this creates a smoother angle
-                    var newDir1 = (candidate - prev).normalized;
-                    var newDir2 = (next - candidate).normalized;
+                    var newDir1 = ((Vector2)(candidate - prev)).normalized;
+                    var newDir2 = ((Vector2)(next - candidate)).normalized;
                     float newAngle = Mathf.Acos(Vector2.Dot(newDir1, newDir2));
                     
                     if (newAngle <= maxAngleRad)
@@ -414,10 +419,10 @@ namespace OfficeMice.MapGeneration.Pathfinding
                 var prev = path[i - 1];
                 var current = path[i];
                 var next = path[i + 1];
-                
-                var dir1 = (current - prev).normalized;
-                var dir2 = (next - current).normalized;
-                
+
+                var dir1 = ((Vector2)(current - prev)).normalized;
+                var dir2 = ((Vector2)(next - current)).normalized;
+
                 float angle = Mathf.Acos(Mathf.Clamp(Vector2.Dot(dir1, dir2), -1f, 1f));
                 totalAngleChange += angle;
             }

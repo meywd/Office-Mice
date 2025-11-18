@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using OfficeMice.MapGeneration.Data;
+using OfficeMice.MapGeneration.Configuration;
+using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Interfaces
 {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace OfficeMice.MapGeneration.Pathfinding
@@ -8,7 +9,7 @@ namespace OfficeMice.MapGeneration.Pathfinding
     /// Provides O(log n) insertion, removal, and priority update operations.
     /// </summary>
     /// <typeparam name="T">Type that implements IComparable</typeparam>
-    internal class PriorityQueue<T> where T : IComparable<T>
+    internal class PriorityQueue<T> : IEnumerable<T> where T : IComparable<T>
     {
         #region Private Fields
         

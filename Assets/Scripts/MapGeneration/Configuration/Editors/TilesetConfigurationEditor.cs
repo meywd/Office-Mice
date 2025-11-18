@@ -267,7 +267,7 @@ namespace OfficeMice.MapGeneration.Configuration.Editors
             EditorGUILayout.LabelField($"Theme: {tilesetConfig.Theme}");
             EditorGUILayout.LabelField($"Floor Tiles: {tilesetConfig.FloorTiles?.Tiles?.Count ?? 0}");
             EditorGUILayout.LabelField($"Wall Tiles: {tilesetConfig.WallTiles?.Tiles?.Count ?? 0}");
-            EditorGUILayout.LabelField($"Decorative Tiles: {tilesetConfig.DecorativeTilesets.Count}");
+            EditorGUILayout.LabelField($"Decorative Tiles: {tilesetConfig.DecorativeTiles.Count}");
             EditorGUILayout.LabelField($"Tile Variations: {tilesetConfig.TileVariations.Count}");
             EditorGUILayout.LabelField($"Tile Rules: {tilesetConfig.TileRules.Count}");
             EditorGUILayout.LabelField($"Tile Size: {tilesetConfig.TileSize}");

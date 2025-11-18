@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using OfficeMice.MapGeneration.Configuration;
+using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Configuration.Editors

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using OfficeMice.MapGeneration.Interfaces;
 using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Configuration;
 using OfficeMice.MapGeneration.Validation;
@@ -373,7 +374,7 @@ namespace OfficeMice.MapGeneration.Rendering
             tilemap.BoxFill(minPos, floorTile, minPos.x, minPos.y, maxPos.x, maxPos.y);
             
             // Fire events for the filled area (sample a few points to avoid spam)
-            var centerPos = new Vector3Int(bounds.center.x, bounds.center.y, 0);
+            var centerPos = new Vector3Int((int)bounds.center.x, (int)bounds.center.y, 0);
             OnTileRendered?.Invoke(centerPos, floorTile);
             
             _tilesRenderedThisFrame += bounds.width * bounds.height;
@@ -543,23 +544,21 @@ namespace OfficeMice.MapGeneration.Rendering
         
         private TileBase GetTileForRoomType(TileType tileType, RoomClassification classification)
         {
-            // Create a cache key that includes both tile type and room classification
-            var cacheKey = $"{tileType}_{classification}";
-            
-            if (_tileCache.TryGetValue(cacheKey, out var cachedTile))
+            // For now, just use the tile type for caching (room classification can be added later with a different cache structure)
+            if (_tileCache.TryGetValue(tileType, out var cachedTile))
             {
                 return cachedTile;
             }
-            
+
             // Get base tile from tileset configuration
             var tile = _currentTileset.GetTileForType(tileType, _random);
-            
+
             // Apply room-type specific modifications if needed
             tile = ApplyRoomTypeModification(tile, tileType, classification);
-            
+
             // Cache the result
-            _tileCache[cacheKey] = tile;
-            
+            _tileCache[tileType] = tile;
+
             return tile;
         }
         

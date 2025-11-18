@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using OfficeMice.MapGeneration.Interfaces;
 using OfficeMice.MapGeneration.Data;
+using OfficeMice.MapGeneration.Configuration;
 using OfficeMice.MapGeneration.Validation;
 using OfficeMice.MapGeneration.Pathfinding;
 

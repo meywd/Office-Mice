@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace OfficeMice.MapGeneration.Pathfinding
@@ -6,7 +7,7 @@ namespace OfficeMice.MapGeneration.Pathfinding
     /// Node used in A* pathfinding algorithm.
     /// Represents a position in the pathfinding grid with associated costs.
     /// </summary>
-    internal class AStarNode : IComparable<AStarNode>
+    public class AStarNode : IComparable<AStarNode>
     {
         #region Properties
         

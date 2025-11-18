@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Interfaces
 {

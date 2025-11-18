@@ -336,7 +336,6 @@ namespace OfficeMice.MapGeneration.Pathfinding
             var startNode = GetOrCreateNode(start);
             startNode.GCost = 0;
             startNode.HCost = _heuristic(start, end);
-            startNode.FCost = startNode.GCost + startNode.HCost;
             
             _openSet.Enqueue(startNode);
             _allNodes[start] = startNode;
@@ -372,7 +371,6 @@ namespace OfficeMice.MapGeneration.Pathfinding
                         neighborNode.Parent = currentNode;
                         neighborNode.GCost = tentativeGCost;
                         neighborNode.HCost = _heuristic(neighborPos, end);
-                        neighborNode.FCost = neighborNode.GCost + neighborNode.HCost;
                         
                         if (!_openSet.Contains(neighborNode))
                         {

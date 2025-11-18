@@ -478,10 +478,15 @@ namespace OfficeMice.MapGeneration.Configuration.Editors
             if (settings.QualitySettings != null)
             {
                 var qualitySettings = settings.QualitySettings;
-                qualitySettings.Quality = GenerationQuality.Ultra;
-                qualitySettings.DecorationQuality = 1.0f;
-                qualitySettings.LightingQuality = 1.0f;
-                qualitySettings.EffectsQuality = 1.0f;
+                var qualityField = qualitySettings.GetType().GetField("_quality", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var decorationField = qualitySettings.GetType().GetField("_decorationQuality", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var lightingField = qualitySettings.GetType().GetField("_lightingQuality", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var effectsField = qualitySettings.GetType().GetField("_effectsQuality", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                qualityField?.SetValue(qualitySettings, GenerationQuality.Ultra);
+                decorationField?.SetValue(qualitySettings, 1.0f);
+                lightingField?.SetValue(qualitySettings, 1.0f);
+                effectsField?.SetValue(qualitySettings, 1.0f);
             }
             
             EditorUtility.DisplayDialog("High Quality Setup", "Configuration updated for high quality", "OK");

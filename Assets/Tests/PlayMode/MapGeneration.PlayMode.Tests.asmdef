@@ -2,19 +2,19 @@
     "name": "MapGeneration.PlayMode.Tests",
     "rootNamespace": "OfficeMice.MapGeneration.PlayMode.Tests",
     "references": [
-        "Unity.TestRunner",
+        "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Unity.Performance.Testing",
-        "MapGeneration"
+        "MapGeneration",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll"
     ],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],

@@ -20,7 +20,7 @@ namespace OfficeMice.MapGeneration.Content
         // Configuration and rules
         private readonly Dictionary<RoomClassification, SpawnDensityRule> _densityRules;
         private readonly SpawnTableConfiguration _spawnTableConfig;
-        private readonly GridCollisionDetector _collisionDetector;
+        private GridCollisionDetector _collisionDetector;
 
         // Performance tracking
         private readonly System.Diagnostics.Stopwatch _placementStopwatch;
@@ -187,7 +187,7 @@ namespace OfficeMice.MapGeneration.Content
             foreach (var spawnPoint in spawnPoints)
             {
                 // Check room validity
-                var room = map.GetRoom(spawnPoint.RoomID);
+                var room = map.GetRoomByID(spawnPoint.RoomID);
                 if (room == null)
                 {
                     result.AddError($"Spawn point {spawnPoint.Position} references invalid room {spawnPoint.RoomID}");
@@ -636,7 +636,7 @@ namespace OfficeMice.MapGeneration.Content
 
             foreach (var group in spawnPointsByRoom)
             {
-                var room = map.GetRoom(group.Key);
+                var room = map.GetRoomByID(group.Key);
                 if (room == null)
                     continue;
 

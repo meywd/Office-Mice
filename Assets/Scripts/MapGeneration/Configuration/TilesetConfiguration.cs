@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using OfficeMice.MapGeneration.Validation;
@@ -8,7 +9,7 @@ namespace OfficeMice.MapGeneration.Configuration
 {
     /// <summary>
     /// Configuration for tilesets including tile mappings, variations,
-    * rules, and asset references for map generation.
+    /// rules, and asset references for map generation.
     /// </summary>
     [CreateAssetMenu(fileName = "TilesetConfiguration", menuName = "Office Mice/Map Generation/Tileset Configuration")]
     [Serializable]

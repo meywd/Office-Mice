@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Interfaces;
 using OfficeMice.MapGeneration.Validation;
 

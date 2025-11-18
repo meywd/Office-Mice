@@ -164,7 +164,7 @@ namespace OfficeMice.MapGeneration.Pathfinding
             if (room == null || obstacles == null)
                 return doorways;
             
-            var bounds = room.GetBounds();
+            var bounds = room.Bounds;
             
             // Check each edge of the room for potential doorway positions
             // Top edge
@@ -280,7 +280,7 @@ namespace OfficeMice.MapGeneration.Pathfinding
             if (room == null || obstacles == null)
                 return;
             
-            var bounds = room.GetBounds();
+            var bounds = room.Bounds;
             int width = obstacles.GetLength(0);
             int height = obstacles.GetLength(1);
             

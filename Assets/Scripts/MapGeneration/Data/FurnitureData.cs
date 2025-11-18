@@ -8,17 +8,12 @@ namespace OfficeMice.MapGeneration.Data
     /// Contains position, rotation, type, and variant information.
     /// </summary>
     [Serializable]
-    public class FurnitureData
+    public class FurnitureData : PlacedObjectData
     {
-        [Header("Identity")]
+        [Header("Furniture Specific")]
         [SerializeField] private string _furnitureID;
         [SerializeField] private string _furnitureType;
         [SerializeField] private string _prefabPath;
-
-        [Header("Position")]
-        [SerializeField] private int _roomID;
-        [SerializeField] private Vector2Int _position;
-        [SerializeField] private Vector2Int _size;
         [SerializeField] private int _rotation; // 0, 90, 180, 270 degrees
 
         [Header("Variation")]
@@ -26,41 +21,28 @@ namespace OfficeMice.MapGeneration.Data
         [SerializeField] private bool _isFlipped;
 
         [Header("Properties")]
-        [SerializeField] private bool _blocksMovement;
-        [SerializeField] private bool _blocksSight;
         [SerializeField] private float _health;
 
         // Public Properties
         public string FurnitureID => _furnitureID;
         public string FurnitureType => _furnitureType;
         public string PrefabPath => _prefabPath;
-        public int RoomID => _roomID;
-        public Vector2Int Position => _position;
-        public Vector2Int Size => _size;
         public int Rotation => _rotation;
         public int VariantIndex => _variantIndex;
         public bool IsFlipped => _isFlipped;
-        public bool BlocksMovement => _blocksMovement;
-        public bool BlocksSight => _blocksSight;
         public float Health => _health;
 
-        public RectInt Bounds => new RectInt(_position, _size);
-
         // Constructor
-        public FurnitureData(string furnitureID, string furnitureType, string prefabPath, 
+        public FurnitureData(string furnitureID, string furnitureType, string prefabPath,
                            int roomID, Vector2Int position, Vector2Int size)
+            : base(furnitureID, furnitureType, roomID, position, size)
         {
             _furnitureID = furnitureID ?? throw new ArgumentNullException(nameof(furnitureID));
             _furnitureType = furnitureType ?? throw new ArgumentNullException(nameof(furnitureType));
             _prefabPath = prefabPath ?? throw new ArgumentNullException(nameof(prefabPath));
-            _roomID = roomID;
-            _position = position;
-            _size = size;
             _rotation = 0;
             _variantIndex = 0;
             _isFlipped = false;
-            _blocksMovement = true;
-            _blocksSight = false;
             _health = 100f;
         }
 
@@ -82,28 +64,12 @@ namespace OfficeMice.MapGeneration.Data
             _isFlipped = flipped;
         }
 
-        public void SetBlockingProperties(bool blocksMovement, bool blocksSight)
-        {
-            _blocksMovement = blocksMovement;
-            _blocksSight = blocksSight;
-        }
-
         public void SetHealth(float health)
         {
             _health = Mathf.Max(0f, health);
         }
 
         // Query Methods
-        public bool ContainsPoint(Vector2Int point)
-        {
-            return Bounds.Contains(point);
-        }
-
-        public bool OverlapsWith(RectInt otherBounds)
-        {
-            return Bounds.Overlaps(otherBounds);
-        }
-
         public bool OverlapsWith(FurnitureData other)
         {
             return OverlapsWith(other.Bounds);
@@ -121,13 +87,13 @@ namespace OfficeMice.MapGeneration.Data
             return Quaternion.Euler(0, 0, _rotation);
         }
 
-        public Vector3 GetWorldPosition(Vector3 tilemapOffset)
+        public new Vector3 GetWorldPosition(Vector3 tilemapOffset)
         {
             return tilemapOffset + new Vector3(_position.x + _size.x * 0.5f, _position.y + _size.y * 0.5f, 0);
         }
 
         // Validation
-        public bool IsValid()
+        public new bool IsValid()
         {
             return !string.IsNullOrEmpty(_furnitureID) &&
                    !string.IsNullOrEmpty(_furnitureType) &&
@@ -138,14 +104,13 @@ namespace OfficeMice.MapGeneration.Data
         }
 
         // Clone
-        public FurnitureData Clone()
+        public override PlacedObjectData Clone()
         {
             var clone = new FurnitureData(_furnitureID, _furnitureType, _prefabPath, _roomID, _position, _size);
             clone._rotation = _rotation;
             clone._variantIndex = _variantIndex;
             clone._isFlipped = _isFlipped;
-            clone._blocksMovement = _blocksMovement;
-            clone._blocksSight = _blocksSight;
+            clone.SetCollisionProperties(_blocksMovement, _blocksSight, _collisionLayer);
             clone._health = _health;
             return clone;
         }
@@ -200,19 +165,19 @@ namespace OfficeMice.MapGeneration.Data
 
         // Public Properties
         public string FurnitureType => _furnitureType;
-        public string[] AllowedPrefabs => _allowedPrefabs;
-        public Vector2Int MinRoomSize => _minRoomSize;
-        public Vector2Int MaxRoomSize => _maxRoomSize;
-        public int MinCount => _minCount;
-        public int MaxCount => _maxCount;
-        public float PlacementProbability => _placementProbability;
-        public bool PlaceAgainstWalls => _placeAgainstWalls;
-        public bool PlaceInCenter => _placeInCenter;
-        public int MinDistanceFromWalls => _minDistanceFromWalls;
-        public int MinDistanceFromDoorways => _minDistanceFromDoorways;
-        public bool AllowRotation => _allowRotation;
-        public bool AllowFlipping => _allowFlipping;
-        public int VariantCount => _variantCount;
+        public string[] AllowedPrefabs { get => _allowedPrefabs; set => _allowedPrefabs = value; }
+        public Vector2Int MinRoomSize { get => _minRoomSize; set => _minRoomSize = value; }
+        public Vector2Int MaxRoomSize { get => _maxRoomSize; set => _maxRoomSize = value; }
+        public int MinCount { get => _minCount; set => _minCount = value; }
+        public int MaxCount { get => _maxCount; set => _maxCount = value; }
+        public float PlacementProbability { get => _placementProbability; set => _placementProbability = value; }
+        public bool PlaceAgainstWalls { get => _placeAgainstWalls; set => _placeAgainstWalls = value; }
+        public bool PlaceInCenter { get => _placeInCenter; set => _placeInCenter = value; }
+        public int MinDistanceFromWalls { get => _minDistanceFromWalls; set => _minDistanceFromWalls = value; }
+        public int MinDistanceFromDoorways { get => _minDistanceFromDoorways; set => _minDistanceFromDoorways = value; }
+        public bool AllowRotation { get => _allowRotation; set => _allowRotation = value; }
+        public bool AllowFlipping { get => _allowFlipping; set => _allowFlipping = value; }
+        public int VariantCount { get => _variantCount; set => _variantCount = value; }
 
         // Constructor
         public FurniturePlacementRule(string furnitureType)

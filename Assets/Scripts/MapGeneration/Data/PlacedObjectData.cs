@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace OfficeMice.MapGeneration.Data
@@ -61,7 +62,7 @@ namespace OfficeMice.MapGeneration.Data
             _size = Vector2Int.Max(Vector2Int.one, size);
         }
 
-        public void SetCollisionProperties(bool blocksMovement, bool blocksSight, LayerMask layer = 0)
+        public void SetCollisionProperties(bool blocksMovement, bool blocksSight, LayerMask layer = default)
         {
             _blocksMovement = blocksMovement;
             _blocksSight = blocksSight;

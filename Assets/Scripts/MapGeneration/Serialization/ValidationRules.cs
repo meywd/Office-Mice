@@ -132,9 +132,6 @@ namespace OfficeMice.MapGeneration.Serialization
                 return errors;
             }
             
-            if (original.NodeID != deserialized.NodeID)
-                errors.Add($"{path}.NodeID mismatch: original={original.NodeID}, deserialized={deserialized.NodeID}");
-                
             if (original.Bounds != deserialized.Bounds)
                 errors.Add($"{path}.Bounds mismatch: original={original.Bounds}, deserialized={deserialized.Bounds}");
                 
@@ -143,23 +140,23 @@ namespace OfficeMice.MapGeneration.Serialization
             
             if (!original.IsLeaf)
             {
-                if (original.LeftChild == null && deserialized.LeftChild != null)
-                    errors.Add($"{path}.LeftChild: original is null, deserialized is not");
-                else if (original.LeftChild != null && deserialized.LeftChild == null)
-                    errors.Add($"{path}.LeftChild: original is not null, deserialized is null");
-                else if (original.LeftChild != null && deserialized.LeftChild != null)
+                if (original.Left == null && deserialized.Left != null)
+                    errors.Add($"{path}.Left: original is null, deserialized is not");
+                else if (original.Left != null && deserialized.Left == null)
+                    errors.Add($"{path}.Left: original is not null, deserialized is null");
+                else if (original.Left != null && deserialized.Left != null)
                 {
-                    var leftErrors = ValidateBSPNode(original.LeftChild, deserialized.LeftChild, $"{path}.LeftChild");
+                    var leftErrors = ValidateBSPNode(original.Left, deserialized.Left, $"{path}.Left");
                     errors.AddRange(leftErrors);
                 }
-                
-                if (original.RightChild == null && deserialized.RightChild != null)
-                    errors.Add($"{path}.RightChild: original is null, deserialized is not");
-                else if (original.RightChild != null && deserialized.RightChild == null)
-                    errors.Add($"{path}.RightChild: original is not null, deserialized is null");
-                else if (original.RightChild != null && deserialized.RightChild != null)
+
+                if (original.Right == null && deserialized.Right != null)
+                    errors.Add($"{path}.Right: original is null, deserialized is not");
+                else if (original.Right != null && deserialized.Right == null)
+                    errors.Add($"{path}.Right: original is not null, deserialized is null");
+                else if (original.Right != null && deserialized.Right != null)
                 {
-                    var rightErrors = ValidateBSPNode(original.RightChild, deserialized.RightChild, $"{path}.RightChild");
+                    var rightErrors = ValidateBSPNode(original.Right, deserialized.Right, $"{path}.Right");
                     errors.AddRange(rightErrors);
                 }
             }
@@ -225,14 +222,14 @@ namespace OfficeMice.MapGeneration.Serialization
                 return errors;
             }
             
-            if (original.Metadata.GenerationAlgorithm != deserialized.Metadata.GenerationAlgorithm)
-                errors.Add($"Metadata.GenerationAlgorithm mismatch: original={original.Metadata.GenerationAlgorithm}, deserialized={deserialized.Metadata.GenerationAlgorithm}");
-                
-            if (original.Metadata.AlgorithmVersion != deserialized.Metadata.AlgorithmVersion)
-                errors.Add($"Metadata.AlgorithmVersion mismatch: original={original.Metadata.AlgorithmVersion}, deserialized={deserialized.Metadata.AlgorithmVersion}");
-                
-            if (Math.Abs(original.Metadata.GenerationTimeMs - deserialized.Metadata.GenerationTimeMs) > 0.1f)
-                errors.Add($"Metadata.GenerationTimeMs mismatch: original={original.Metadata.GenerationTimeMs}, deserialized={deserialized.Metadata.GenerationTimeMs}");
+            if (original.Metadata.GeneratorType != deserialized.Metadata.GeneratorType)
+                errors.Add($"Metadata.GeneratorType mismatch: original={original.Metadata.GeneratorType}, deserialized={deserialized.Metadata.GeneratorType}");
+
+            if (original.Metadata.Version != deserialized.Metadata.Version)
+                errors.Add($"Metadata.Version mismatch: original={original.Metadata.Version}, deserialized={deserialized.Metadata.Version}");
+
+            if (Math.Abs(original.Metadata.GenerationTime - deserialized.Metadata.GenerationTime) > 0.1f)
+                errors.Add($"Metadata.GenerationTime mismatch: original={original.Metadata.GenerationTime}, deserialized={deserialized.Metadata.GenerationTime}");
             
             return errors;
         }

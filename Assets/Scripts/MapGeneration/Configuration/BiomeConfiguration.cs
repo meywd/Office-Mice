@@ -304,7 +304,7 @@ namespace OfficeMice.MapGeneration.Configuration
     public class BiomeGenerationRules
     {
         [Header("Room Generation")]
-        [SerializeField, Vector2IntRange] private Vector2Int _roomSizeRange = new Vector2Int(5, 15);
+        [SerializeField, Vector2IntRange(3, 50)] private Vector2Int _roomSizeRange = new Vector2Int(5, 15);
         [SerializeField, Range(1, 20)] private int _maxRooms = 10;
         [SerializeField, Range(0f, 1f)] private float _roomDensity = 0.5f;
         

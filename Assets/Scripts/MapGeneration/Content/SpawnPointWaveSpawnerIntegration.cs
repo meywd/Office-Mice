@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Configuration;
+using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Content
 {
@@ -196,7 +197,7 @@ namespace OfficeMice.MapGeneration.Content
             }
 
             // Check tag exists
-            if (!UnityEditorInternal.InternalEditorUtility.tags.Contains(_spawnPointTag))
+            if (!System.Array.Exists(UnityEditorInternal.InternalEditorUtility.tags, tag => tag == _spawnPointTag))
             {
                 result.AddError($"Spawn point tag '{_spawnPointTag}' does not exist in Unity tags");
             }
@@ -270,7 +271,7 @@ namespace OfficeMice.MapGeneration.Content
         {
             #if UNITY_EDITOR
             // Check if tag exists
-            if (!UnityEditorInternal.InternalEditorUtility.tags.Contains(_spawnPointTag))
+            if (!System.Array.Exists(UnityEditorInternal.InternalEditorUtility.tags, tag => tag == _spawnPointTag))
             {
                 // Add tag (editor only)
                 UnityEditor.AssetDatabase.SaveAssets();

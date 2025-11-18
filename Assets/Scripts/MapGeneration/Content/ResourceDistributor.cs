@@ -17,7 +17,7 @@ namespace OfficeMice.MapGeneration.Content
         #region Private Fields
 
         private readonly IAssetLoader _assetLoader;
-        private readonly System.Random _random;
+        private System.Random _random;
         private int _seed;
         
         // Resource distribution rules
@@ -224,7 +224,7 @@ namespace OfficeMice.MapGeneration.Content
             {
                 foreach (var doorway in room.Doorways)
                 {
-                    float distance = Vector2Int.Distance(position, doorway.Position);
+                    float distance = Vector2Int.Distance(position, doorway.position);
                     if (distance < rule.MinDistanceFromDoorways)
                         return false;
                 }
@@ -233,7 +233,7 @@ namespace OfficeMice.MapGeneration.Content
             // Check collision with furniture
             foreach (var furniturePiece in furniture)
             {
-                if (furniturePiece.OccupiedTiles.Contains(position))
+                if (furniturePiece.ContainsPoint(position))
                     return false;
             }
 

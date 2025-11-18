@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using OfficeMice.MapGeneration.Configuration;
+using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Data
 {
@@ -164,7 +165,7 @@ namespace OfficeMice.MapGeneration.Data
                     return _depth % 2 == 0;
                 case SplitPreference.Random:
                     return UnityEngine.Random.value < 0.5f;
-                case SplitPreference.AspectRatio:
+                case SplitPreference.Balanced:
                     // Prefer splitting along the longer axis
                     return _bounds.height > _bounds.width;
                 default:

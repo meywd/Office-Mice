@@ -347,13 +347,13 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField, TextArea(2, 3)] private string _notes;
         
         // Public Properties
-        public RoomClassification Type => _type;
-        public Vector2Int MinSize => _minSize;
-        public Vector2Int MaxSize => _maxSize;
-        public Vector2Int PreferredSize => _preferredSize;
-        public PositionPreference PositionPreference => _positionPreference;
-        public DepthPreference DepthPreference => _depthPreference;
-        public int Priority => _priority;
+        public RoomClassification Type { get => _type; set => _type = value; }
+        public Vector2Int MinSize { get => _minSize; set => _minSize = value; }
+        public Vector2Int MaxSize { get => _maxSize; set => _maxSize = value; }
+        public Vector2Int PreferredSize { get => _preferredSize; set => _preferredSize = value; }
+        public PositionPreference PositionPreference { get => _positionPreference; set => _positionPreference = value; }
+        public DepthPreference DepthPreference { get => _depthPreference; set => _depthPreference = value; }
+        public int Priority { get => _priority; set => _priority = value; }
         public string Notes => _notes;
         
         public ValidationResult Validate()
@@ -396,22 +396,22 @@ namespace OfficeMice.MapGeneration.Configuration
     {
         [Header("Room Type")]
         [SerializeField] private RoomClassification _type;
-        
+
         [Header("Distribution")]
         [SerializeField, Range(0f, 100f)] private float _percentage = 10f;
         [SerializeField, Min(0)] private int _minCount = 0;
         [SerializeField, Min(0)] private int _maxCount = 10;
-        
+
         [Header("Constraints")]
         [SerializeField] private bool _enforceMinCount = true;
         [SerializeField] private bool _enforceMaxCount = true;
         [SerializeField, TextArea(2, 3)] private string _notes;
-        
+
         // Public Properties
-        public RoomClassification Type => _type;
-        public float Percentage => _percentage;
-        public int MinCount => _minCount;
-        public int MaxCount => _maxCount;
+        public RoomClassification Type { get => _type; set => _type = value; }
+        public float Percentage { get => _percentage; set => _percentage = value; }
+        public int MinCount { get => _minCount; set => _minCount = value; }
+        public int MaxCount { get => _maxCount; set => _maxCount = value; }
         public bool EnforceMinCount => _enforceMinCount;
         public bool EnforceMaxCount => _enforceMaxCount;
         public string Notes => _notes;

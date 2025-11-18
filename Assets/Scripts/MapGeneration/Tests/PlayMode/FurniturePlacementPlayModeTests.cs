@@ -57,11 +57,11 @@ namespace OfficeMice.MapGeneration.Tests.PlayMode
             foreach (var furniture in placedFurniture)
             {
                 Assert.IsTrue(furniture.IsValid(), "All placed furniture should be valid");
-                Assert.IsTrue(map.GetRoom(furniture.RoomID) != null, "Furniture should reference valid room");
-                
+                Assert.IsTrue(map.GetRoomByID(furniture.RoomID) != null, "Furniture should reference valid room");
+
                 // Check position is within room bounds
-                var room = map.GetRoom(furniture.RoomID);
-                Assert.IsTrue(room.ContainsPoint(furniture.Position), 
+                var room = map.GetRoomByID(furniture.RoomID);
+                Assert.IsTrue(room.ContainsPoint(furniture.Position),
                     $"Furniture at {furniture.Position} should be within room bounds");
             }
         }
@@ -227,46 +227,51 @@ namespace OfficeMice.MapGeneration.Tests.PlayMode
 
         private MapData CreateTestMap()
         {
-            var map = new MapData(100, 100, 12345);
-            
-            var rooms = new[]
-            {
-                new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1, SetClassification(RoomClassification.Office) },
-                new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2, SetClassification(RoomClassification.Conference) },
-                new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3, SetClassification(RoomClassification.BreakRoom) },
-                new RoomData(new RectInt(30, 30, 8, 8)) { RoomID = 4, SetClassification(RoomClassification.Storage) },
-                new RoomData(new RectInt(50, 10, 10, 10)) { RoomID = 5, SetClassification(RoomClassification.ServerRoom) }
-            };
+            var map = new MapData(12345, new Vector2Int(100, 100));
 
-            foreach (var room in rooms)
-            {
-                map.AddRoom(room);
-            }
+            var room1 = new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1 };
+            room1.SetClassification(RoomClassification.Office);
+
+            var room2 = new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2 };
+            room2.SetClassification(RoomClassification.Conference);
+
+            var room3 = new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3 };
+            room3.SetClassification(RoomClassification.BreakRoom);
+
+            var room4 = new RoomData(new RectInt(30, 30, 8, 8)) { RoomID = 4 };
+            room4.SetClassification(RoomClassification.Storage);
+
+            var room5 = new RoomData(new RectInt(50, 10, 10, 10)) { RoomID = 5 };
+            room5.SetClassification(RoomClassification.ServerRoom);
+
+            map.AddRoom(room1);
+            map.AddRoom(room2);
+            map.AddRoom(room3);
+            map.AddRoom(room4);
+            map.AddRoom(room5);
 
             return map;
         }
 
         private MapData CreateSmallTestMap()
         {
-            var map = new MapData(50, 50, 12345);
-            
-            var rooms = new[]
-            {
-                new RoomData(new RectInt(5, 5, 6, 6)) { RoomID = 1, SetClassification(RoomClassification.Office) },
-                new RoomData(new RectInt(20, 5, 8, 8)) { RoomID = 2, SetClassification(RoomClassification.Office) }
-            };
+            var map = new MapData(12345, new Vector2Int(50, 50));
 
-            foreach (var room in rooms)
-            {
-                map.AddRoom(room);
-            }
+            var room1 = new RoomData(new RectInt(5, 5, 6, 6)) { RoomID = 1 };
+            room1.SetClassification(RoomClassification.Office);
+
+            var room2 = new RoomData(new RectInt(20, 5, 8, 8)) { RoomID = 2 };
+            room2.SetClassification(RoomClassification.Office);
+
+            map.AddRoom(room1);
+            map.AddRoom(room2);
 
             return map;
         }
 
         private MapData CreateLargeTestMap()
         {
-            var map = new MapData(200, 200, 12345);
+            var map = new MapData(12345, new Vector2Int(200, 200));
             var roomId = 1;
 
             for (int i = 0; i < 20; i++)

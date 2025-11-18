@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Content;
 using OfficeMice.MapGeneration.Interfaces;
@@ -60,9 +62,9 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
             // Verify all furniture is in valid rooms
             foreach (var furniture in placedFurniture)
             {
-                var room = _testMap.GetRoom(furniture.RoomID);
+                var room = _testMap.GetRoomByID(furniture.RoomID);
                 Assert.IsNotNull(room, $"Furniture {furniture.FurnitureID} references invalid room {furniture.RoomID}");
-                Assert.IsTrue(room.ContainsPoint(furniture.Position), 
+                Assert.IsTrue(room.ContainsPoint(furniture.Position),
                     $"Furniture {furniture.FurnitureID} at {furniture.Position} is outside room bounds");
             }
         }
@@ -85,7 +87,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         public void PlaceFurnitureInRoom_WithOfficeRoom_PlacesOfficeFurniture()
         {
             // Arrange
-            var officeRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Office);
+            var officeRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Office);
             Assert.IsNotNull(officeRoom, "Test map should have an office room");
 
             // Act
@@ -105,7 +107,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         public void PlaceFurnitureInRoom_WithConferenceRoom_PlacesConferenceFurniture()
         {
             // Arrange
-            var conferenceRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Conference);
+            var conferenceRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Conference);
             Assert.IsNotNull(conferenceRoom, "Test map should have a conference room");
 
             // Act
@@ -216,7 +218,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
             _furniturePlacer.AddPlacementRule(roomType, rule);
 
             // Verify by placing furniture - should use the new rule
-            var officeRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Office);
+            var officeRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Office);
             var placedFurniture = _furniturePlacer.PlaceFurnitureInRoom(officeRoom, _testBiome);
 
             // Assert
@@ -328,49 +330,10 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
 
         #region Mock Classes
 
-        private class MockAssetLoader : IAssetLoader
-        {
-            public T LoadAsset<T>(string path) where T : UnityEngine.Object
-            {
-                // Return mock objects for testing
-                if (typeof(T) == typeof(GameObject))
-                {
-                    var go = new GameObject("MockFurniture");
-                    return go as T;
-                }
-                return null;
-            }
-
-            public T[] LoadAllAssets<T>(string path) where T : UnityEngine.Object
-            {
-                return new T[0];
-            }
-
-            public bool AssetExists(string path)
-            {
-                return true; // Assume all assets exist for testing
-            }
-
-            public void PreloadAssets(string[] paths)
-            {
-                // Mock implementation
-            }
-
-            public void ClearCache()
-            {
-                // Mock implementation
-            }
-
-            public CacheStats GetCacheStats()
-            {
-                return new CacheStats();
-            }
-        }
-
         private class TestFurnitureData : PlacedObjectData
         {
-            public TestFurnitureData(string objectID, string objectType, int roomID, 
-                                    Vector2Int position, Vector2Int size) 
+            public TestFurnitureData(string objectID, string objectType, int roomID,
+                                    Vector2Int position, Vector2Int size)
                 : base(objectID, objectType, roomID, position, size)
             {
             }
@@ -382,5 +345,67 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Mock asset loader for testing purposes. Shared across test classes.
+    /// </summary>
+    internal class MockAssetLoader : IAssetLoader
+    {
+        public event Action<string, Type> OnAssetLoaded;
+        public event Action<string, Type, Exception> OnAssetLoadFailed;
+        public event Action OnCacheCleared;
+
+        public TileBase LoadTile(string tileName)
+        {
+            return null; // Mock implementation
+        }
+
+        public GameObject LoadPrefab(string prefabName)
+        {
+            var go = new GameObject("MockFurniture");
+            return go;
+        }
+
+        public T LoadScriptableObject<T>(string assetName) where T : ScriptableObject
+        {
+            return null; // Mock implementation
+        }
+
+        public void PreloadAssets(List<string> assetNames, Type assetType)
+        {
+            // Mock implementation
+        }
+
+        public void ClearCache()
+        {
+            // Mock implementation
+            OnCacheCleared?.Invoke();
+        }
+
+        public CacheStats GetCacheStats()
+        {
+            return new CacheStats();
+        }
+
+        public bool IsAssetCached(string assetName, Type assetType)
+        {
+            return true; // Mock implementation
+        }
+
+        public T[] LoadAllAssets<T>() where T : UnityEngine.Object
+        {
+            return new T[0];
+        }
+
+        public void LoadAssetAsync(string assetName, Type assetType, Action<UnityEngine.Object> callback)
+        {
+            callback?.Invoke(null); // Mock implementation
+        }
+
+        public ValidationResult ValidateRequiredAssets(List<string> requiredAssets, Type assetType)
+        {
+            return new ValidationResult(); // Mock implementation - all valid
+        }
     }
 }

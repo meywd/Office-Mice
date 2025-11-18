@@ -164,7 +164,7 @@ namespace OfficeMice.MapGeneration.Serialization
                         throw new SerializationException("Invalid binary format - wrong magic number");
                         
                     string version = reader.ReadString();
-                    long timestamp = reader.ReadLong();
+                    long timestamp = reader.ReadInt64();
                     
                     // Read JSON data
                     int jsonLength = reader.ReadInt32();

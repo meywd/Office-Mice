@@ -1,4 +1,5 @@
 using UnityEngine;
+using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Configuration;
 using OfficeMice.MapGeneration.Generators;
 
@@ -141,13 +142,13 @@ namespace OfficeMice.MapGeneration.Visualization
             if (_generator != null)
             {
                 var result = _generator.ValidateBSPStructure();
-                if (result.HasErrors)
+                if (!result.IsValid)
                 {
-                    Debug.LogError($"BSP Validation Errors:\n{result.GetErrorSummary()}");
+                    Debug.LogError($"BSP Validation Errors:\n{string.Join("\n", result.Errors)}");
                 }
-                else if (result.HasWarnings)
+                else if (result.Warnings.Count > 0)
                 {
-                    Debug.LogWarning($"BSP Validation Warnings:\n{result.GetWarningSummary()}");
+                    Debug.LogWarning($"BSP Validation Warnings:\n{string.Join("\n", result.Warnings)}");
                 }
                 else
                 {

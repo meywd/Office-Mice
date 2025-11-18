@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Configuration
 {
     /// <summary>
     /// Configuration for enemy spawn tables including wave definitions, spawn rules,
-    * difficulty scaling, and integration with the existing WaveSpawner system.
+    /// difficulty scaling, and integration with the existing WaveSpawner system.
     /// </summary>
     [CreateAssetMenu(fileName = "SpawnTableConfiguration", menuName = "Office Mice/Map Generation/Spawn Table Configuration")]
     [Serializable]
@@ -259,14 +260,14 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField, Range(0.1f, 5f)] private float _healthMultiplier = 1f;
         [SerializeField, Range(0.1f, 5f)] private float _damageMultiplier = 1f;
         
-        public string EnemyType => _enemyType;
-        public GameObject EnemyPrefab => _enemyPrefab;
-        public float Weight => _weight;
-        public int MinCount => _minCount;
-        public int MaxCount => _maxCount;
-        public float SpawnDelay => _spawnDelay;
-        public float HealthMultiplier => _healthMultiplier;
-        public float DamageMultiplier => _damageMultiplier;
+        public string EnemyType { get => _enemyType; set => _enemyType = value; }
+        public GameObject EnemyPrefab { get => _enemyPrefab; set => _enemyPrefab = value; }
+        public float Weight { get => _weight; set => _weight = value; }
+        public int MinCount { get => _minCount; set => _minCount = value; }
+        public int MaxCount { get => _maxCount; set => _maxCount = value; }
+        public float SpawnDelay { get => _spawnDelay; set => _spawnDelay = value; }
+        public float HealthMultiplier { get => _healthMultiplier; set => _healthMultiplier = value; }
+        public float DamageMultiplier { get => _damageMultiplier; set => _damageMultiplier = value; }
         
         public ValidationResult Validate()
         {

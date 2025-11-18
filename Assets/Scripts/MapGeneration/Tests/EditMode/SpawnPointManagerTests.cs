@@ -60,7 +60,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
             // Verify all spawn points are in valid rooms
             foreach (var spawnPoint in spawnPoints)
             {
-                var room = _testMap.GetRoom(spawnPoint.RoomID);
+                var room = _testMap.GetRoomByID(spawnPoint.RoomID);
                 Assert.IsNotNull(room, $"Spawn point {spawnPoint.Position} references invalid room {spawnPoint.RoomID}");
                 Assert.IsTrue(room.ContainsPoint(spawnPoint.Position), 
                     $"Spawn point {spawnPoint.Position} is outside room bounds");
@@ -85,7 +85,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         public void PlaceSpawnPointsInRoom_OfficeRoom_PrioritizesCornersAndCover()
         {
             // Arrange
-            var officeRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Office);
+            var officeRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Office);
             Assert.IsNotNull(officeRoom, "Test map should have an office room");
 
             // Act
@@ -104,7 +104,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
         public void PlaceSpawnPointsInRoom_ConferenceRoom_PrioritizesPerimeter()
         {
             // Arrange
-            var conferenceRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Conference);
+            var conferenceRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Conference);
             Assert.IsNotNull(conferenceRoom, "Test map should have a conference room");
 
             // Act
@@ -147,7 +147,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
             // Assert
             Assert.IsNotNull(validationResult);
             Assert.IsFalse(validationResult.IsValid, "Invalid room ID should cause validation failure");
-            Assert.IsTrue(validationResult.HasErrors, "Should have specific error about invalid room");
+            Assert.IsTrue(validationResult.Errors.Count > 0, "Should have specific error about invalid room");
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
             _spawnPointManager.AddDensityRule(roomType, rule);
 
             // Verify by placing spawn points - should use the new rule
-            var officeRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Office);
+            var officeRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Office);
             var spawnPoints = _spawnPointManager.PlaceSpawnPointsInRoom(officeRoom, _testFurniture);
 
             // Assert
@@ -223,7 +223,7 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
             _spawnPointManager.SetPositionPriorities(roomType, priorities);
 
             // Verify by placing spawn points - should use new priorities
-            var officeRoom = _testMap.Rooms.Find(r => r.Classification == RoomClassification.Office);
+            var officeRoom = _testMap.Rooms.FirstOrDefault(r => r.Classification == RoomClassification.Office);
             var spawnPoints = _spawnPointManager.PlaceSpawnPointsInRoom(officeRoom, _testFurniture);
 
             // Assert

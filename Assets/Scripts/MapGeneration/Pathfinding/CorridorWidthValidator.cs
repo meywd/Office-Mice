@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Validation;
@@ -264,7 +265,7 @@ namespace OfficeMice.MapGeneration.Pathfinding
                 float avgRoomSize = 0f;
                 foreach (var room in rooms)
                 {
-                    var bounds = room.GetBounds();
+                    var bounds = room.Bounds;
                     avgRoomSize += bounds.width * bounds.height;
                 }
                 avgRoomSize /= rooms.Count;

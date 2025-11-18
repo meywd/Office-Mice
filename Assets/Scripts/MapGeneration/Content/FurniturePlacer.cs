@@ -322,9 +322,9 @@ namespace OfficeMice.MapGeneration.Content
                 );
             }
 
-            var furniture = template.Clone();
+            var furniture = (FurnitureData)template.Clone();
             furniture.SetPosition(Vector2Int.zero); // Will be set later
-            
+
             return furniture;
         }
 

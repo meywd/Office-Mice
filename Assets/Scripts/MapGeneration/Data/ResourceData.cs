@@ -180,13 +180,13 @@ namespace OfficeMice.MapGeneration.Data
 
         // Public Properties
         public string ResourceType => _resourceType;
-        public string[] AllowedPrefabs => _allowedPrefabs;
+        public string[] AllowedPrefabs { get => _allowedPrefabs; set => _allowedPrefabs = value; }
         public RoomClassification[] AllowedRoomTypes => _allowedRoomTypes;
         public int MinDifficulty => _minDifficulty;
         public int MaxDifficulty => _maxDifficulty;
-        public float SpawnProbability => _spawnProbability;
-        public int MinQuantity => _minQuantity;
-        public int MaxQuantity => _maxQuantity;
+        public float SpawnProbability { get => _spawnProbability; set => _spawnProbability = value; }
+        public int MinQuantity { get => _minQuantity; set => _minQuantity = value; }
+        public int MaxQuantity { get => _maxQuantity; set => _maxQuantity = value; }
         public float QuantityPerRoomArea => _quantityPerRoomArea;
         public bool AvoidDoorways => _avoidDoorways;
         public int MinDistanceFromDoorways => _minDistanceFromDoorways;

@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using OfficeMice.MapGeneration.Content;
 using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Interfaces;
 using OfficeMice.MapGeneration.Configuration;
+using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Tests.EditMode
 {
@@ -235,28 +238,64 @@ namespace OfficeMice.MapGeneration.Tests.EditMode
     }
 
     /// <summary>
-    /// Mock asset loader for testing
+    /// Mock asset loader for testing. Shared across test classes.
     /// </summary>
-    public class MockAssetLoader : IAssetLoader
+    internal class MockAssetLoader : IAssetLoader
     {
-        public T LoadAsset<T>(string path) where T : class
+        public event Action<string, Type> OnAssetLoaded;
+        public event Action<string, Type, Exception> OnAssetLoadFailed;
+        public event Action OnCacheCleared;
+
+        public TileBase LoadTile(string tileName)
         {
-            // Return mock objects for testing
-            if (typeof(T) == typeof(GameObject))
-            {
-                return new GameObject() as T;
-            }
-            return null;
+            return null; // Mock implementation
         }
 
-        public T[] LoadAllAssets<T>() where T : class
+        public GameObject LoadPrefab(string prefabName)
+        {
+            var go = new GameObject("MockPrefab");
+            return go;
+        }
+
+        public T LoadScriptableObject<T>(string assetName) where T : ScriptableObject
+        {
+            return null; // Mock implementation
+        }
+
+        public void PreloadAssets(List<string> assetNames, Type assetType)
+        {
+            // Mock implementation
+        }
+
+        public void ClearCache()
+        {
+            // Mock implementation
+            OnCacheCleared?.Invoke();
+        }
+
+        public CacheStats GetCacheStats()
+        {
+            return new CacheStats();
+        }
+
+        public bool IsAssetCached(string assetName, Type assetType)
+        {
+            return true; // Mock implementation
+        }
+
+        public T[] LoadAllAssets<T>() where T : UnityEngine.Object
         {
             return new T[0];
         }
 
-        public bool AssetExists(string path)
+        public void LoadAssetAsync(string assetName, Type assetType, Action<UnityEngine.Object> callback)
         {
-            return true; // Assume all assets exist for testing
+            callback?.Invoke(null); // Mock implementation
+        }
+
+        public ValidationResult ValidateRequiredAssets(List<string> requiredAssets, Type assetType)
+        {
+            return new ValidationResult(); // Mock implementation - all valid
         }
     }
 }

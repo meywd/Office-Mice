@@ -46,10 +46,10 @@ namespace OfficeMice.MapGeneration.Generators
                 _generatedRooms = new List<RoomData>();
 
                 // Create root BSP node
-                _rootNode = new BSPNode(settings.mapBounds);
+                _rootNode = new BSPNode(settings.GetMapBounds());
 
                 // Generate BSP tree
-                _rootNode.SplitRecursive(settings.bsp, _random);
+                _rootNode.SplitRecursive(settings.BSPConfig, _random);
 
                 // Create rooms from leaf nodes
                 var leafNodes = _rootNode.GetLeafNodes();
@@ -97,17 +97,18 @@ namespace OfficeMice.MapGeneration.Generators
             }
 
             // Check room bounds
+            var mapBounds = settings.GetMapBounds();
             foreach (var room in rooms)
             {
-                if (!settings.mapBounds.Contains(room.Bounds.min) || 
-                    !settings.mapBounds.Contains(room.Bounds.max - Vector2Int.one))
+                if (!mapBounds.Contains(room.Bounds.min) ||
+                    !mapBounds.Contains(room.Bounds.max - Vector2Int.one))
                 {
                     result.AddError($"Room {room.RoomID} bounds exceed map bounds");
                 }
 
                 // Validate room size
-                if (room.Bounds.width < settings.bsp.MinPartitionSize || 
-                    room.Bounds.height < settings.bsp.MinPartitionSize)
+                if (room.Bounds.width < settings.BSPConfig.MinPartitionSize ||
+                    room.Bounds.height < settings.BSPConfig.MinPartitionSize)
                 {
                     result.AddError($"Room {room.RoomID} is smaller than minimum size");
                 }
@@ -146,7 +147,7 @@ namespace OfficeMice.MapGeneration.Generators
                 }
 
                 var classifier = new RoomClassifier(classificationSettings, _lastSeed);
-                var classifiedRooms = classifier.ClassifyRooms(rooms, settings.mapBounds);
+                var classifiedRooms = classifier.ClassifyRooms(rooms, settings.GetMapBounds());
 
                 return classifiedRooms;
             }
@@ -183,7 +184,7 @@ namespace OfficeMice.MapGeneration.Generators
             try
             {
                 // Calculate room bounds within the leaf node
-                RectInt roomBounds = CalculateRoomBounds(leaf.Bounds, settings.bsp);
+                RectInt roomBounds = CalculateRoomBounds(leaf.Bounds, settings.BSPConfig);
                 
                 // Create room data
                 var room = new RoomData(roomBounds);
@@ -271,7 +272,13 @@ namespace OfficeMice.MapGeneration.Generators
         /// </summary>
         public ValidationResult ValidateBSPStructure()
         {
-            return _rootNode?.Validate() ?? new ValidationResult().AddError("BSP root node is null");
+            if (_rootNode == null)
+            {
+                var result = new ValidationResult();
+                result.AddError("BSP root node is null");
+                return result;
+            }
+            return _rootNode.Validate();
         }
 
         /// <summary>
@@ -309,8 +316,10 @@ namespace OfficeMice.MapGeneration.Generators
                 else
                     stats.VerticalSplits++;
 
-                node.Left?.CalculateStatistics(node.Left, stats);
-                node.Right?.CalculateStatistics(node.Right, stats);
+                if (node.Left != null)
+                    CalculateStatistics(node.Left, stats);
+                if (node.Right != null)
+                    CalculateStatistics(node.Right, stats);
             }
         }
         #endregion

@@ -22,7 +22,7 @@ namespace OfficeMice.MapGeneration.Content
         private readonly SpawnPointWaveSpawnerIntegration _waveSpawnerIntegration;
         private readonly ResourceDistributor _resourceDistributor;
         private readonly IAssetLoader _assetLoader;
-        private readonly System.Random _random;
+        private System.Random _random;
         private int _seed;
 
         // Content caches
@@ -130,7 +130,12 @@ namespace OfficeMice.MapGeneration.Content
             return _spawnPointManager.PlaceSpawnPoints(map, _placedFurniture);
         }
 
-        public List<ResourceData> PlaceResources(MapData map, BiomeConfiguration biome, int difficulty = 1)
+        public List<ResourceData> PlaceResources(MapData map, BiomeConfiguration biome)
+        {
+            return PlaceResources(map, biome, 1);
+        }
+
+        public List<ResourceData> PlaceResources(MapData map, BiomeConfiguration biome, int difficulty)
         {
             return _resourceDistributor.DistributeResources(map, _placedFurniture, difficulty);
         }
@@ -146,7 +151,7 @@ namespace OfficeMice.MapGeneration.Content
             // Validate spawn points
             foreach (var spawnPoint in _placedSpawnPoints)
             {
-                var room = map.GetRoom(spawnPoint.RoomID);
+                var room = map.GetRoomByID(spawnPoint.RoomID);
                 if (room == null)
                 {
                     result.AddError($"Spawn point {spawnPoint.Position} references invalid room {spawnPoint.RoomID}");
@@ -160,7 +165,7 @@ namespace OfficeMice.MapGeneration.Content
             // Validate resources
             foreach (var resource in _placedResources)
             {
-                var room = map.GetRoom(resource.RoomID);
+                var room = map.GetRoomByID(resource.RoomID);
                 if (room == null)
                 {
                     result.AddError($"Resource {resource.Position} references invalid room {resource.RoomID}");

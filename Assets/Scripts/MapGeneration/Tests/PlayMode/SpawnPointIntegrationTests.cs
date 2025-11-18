@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 using OfficeMice.MapGeneration.Data;
@@ -187,7 +189,9 @@ namespace OfficeMice.MapGeneration.Tests.PlayMode
             // Assert
             Assert.IsNotNull(validationResult, "Should return validation result");
             Assert.IsFalse(validationResult.IsValid, "Missing objects should cause validation failure");
-            Assert.IsTrue(validationResult.HasErrors, "Should have specific errors about missing objects");
+            Assert.IsTrue(validationResult.Errors.Count > 0, "Should have specific errors about missing objects");
+
+            yield return null;
         }
 
         [UnityTest]
@@ -363,31 +367,30 @@ namespace OfficeMice.MapGeneration.Tests.PlayMode
 
         private MapData CreateTestMap()
         {
-            var map = new MapData(100, 100, 12345);
-            
-            var rooms = new[]
-            {
-                new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1, SetClassification(RoomClassification.Office) },
-                new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2, SetClassification(RoomClassification.Conference) },
-                new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3, SetClassification(RoomClassification.BreakRoom) }
-            };
+            var map = new MapData(12345, new Vector2Int(100, 100));
 
-            // Add doorways
-            rooms[0].AddDoorway(new DoorwayPosition(new Vector2Int(14, 10), 1, Direction.South));
-            rooms[1].AddDoorway(new DoorwayPosition(new Vector2Int(36, 10), 2, Direction.South));
-            rooms[2].AddDoorway(new DoorwayPosition(new Vector2Int(13, 30), 1, Direction.North));
+            var room1 = new RoomData(new RectInt(10, 10, 8, 6)) { RoomID = 1 };
+            room1.SetClassification(RoomClassification.Office);
+            room1.AddDoorway(new DoorwayPosition(new Vector2Int(14, 10), 1, DoorwayDirection.South));
 
-            foreach (var room in rooms)
-            {
-                map.AddRoom(room);
-            }
+            var room2 = new RoomData(new RectInt(30, 10, 12, 8)) { RoomID = 2 };
+            room2.SetClassification(RoomClassification.Conference);
+            room2.AddDoorway(new DoorwayPosition(new Vector2Int(36, 10), 2, DoorwayDirection.South));
+
+            var room3 = new RoomData(new RectInt(10, 30, 6, 6)) { RoomID = 3 };
+            room3.SetClassification(RoomClassification.BreakRoom);
+            room3.AddDoorway(new DoorwayPosition(new Vector2Int(13, 30), 1, DoorwayDirection.North));
+
+            map.AddRoom(room1);
+            map.AddRoom(room2);
+            map.AddRoom(room3);
 
             return map;
         }
 
         private MapData CreateLargeTestMap()
         {
-            var map = new MapData(200, 200, 12345);
+            var map = new MapData(12345, new Vector2Int(200, 200));
             var roomId = 1;
 
             for (int i = 0; i < 20; i++)
@@ -421,15 +424,16 @@ namespace OfficeMice.MapGeneration.Tests.PlayMode
 
         private List<FurnitureData> CreateTestFurniture()
         {
-            return new List<FurnitureData>
-            {
-                new FurnitureData("desk1", "Desk", "path", 1, new Vector2Int(12, 12), new Vector2Int(2, 2))
-                { SetBlockingProperties(true, true) },
-                new FurnitureData("table1", "Table", "path", 2, new Vector2Int(35, 15), new Vector2Int(3, 2))
-                { SetBlockingProperties(true, false) },
-                new FurnitureData("shelf1", "Shelf", "path", 3, new Vector2Int(12, 32), new Vector2Int(1, 3))
-                { SetBlockingProperties(true, true) }
-            };
+            var furniture1 = new FurnitureData("desk1", "Desk", "path", 1, new Vector2Int(12, 12), new Vector2Int(2, 2));
+            furniture1.SetCollisionProperties(true, true);
+
+            var furniture2 = new FurnitureData("table1", "Table", "path", 2, new Vector2Int(35, 15), new Vector2Int(3, 2));
+            furniture2.SetCollisionProperties(true, false);
+
+            var furniture3 = new FurnitureData("shelf1", "Shelf", "path", 3, new Vector2Int(12, 32), new Vector2Int(1, 3));
+            furniture3.SetCollisionProperties(true, true);
+
+            return new List<FurnitureData> { furniture1, furniture2, furniture3 };
         }
 
         private List<FurnitureData> CreateTestFurnitureForLargeMap()

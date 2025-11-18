@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using OfficeMice.MapGeneration.Data;
+using OfficeMice.MapGeneration.Configuration;
+using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Interfaces
 {
@@ -18,7 +21,7 @@ namespace OfficeMice.MapGeneration.Interfaces
         /// <returns>Coroutine that yields the generated MapData</returns>
         /// <exception cref="ArgumentNullException">Thrown when settings is null</exception>
         /// <exception cref="InvalidOperationException">Thrown when generation fails validation</exception>
-        IEnumerator<MapData> GenerateMapAsync(MapGenerationSettings settings, int seed = 0);
+        IEnumerator GenerateMapAsync(MapGenerationSettings settings, int seed = 0);
 
         /// <summary>
         /// Synchronous version of map generation for testing and simple use cases.

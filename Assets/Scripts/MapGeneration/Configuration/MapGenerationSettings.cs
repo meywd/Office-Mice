@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using OfficeMice.MapGeneration.Data;
 using OfficeMice.MapGeneration.Validation;
 
 namespace OfficeMice.MapGeneration.Configuration
 {
     /// <summary>
     /// Master configuration for map generation including all parameters,
-    * references to other configurations, and generation rules.
+    /// references to other configurations, and generation rules.
     /// </summary>
     [CreateAssetMenu(fileName = "MapGenerationSettings", menuName = "Office Mice/Map Generation/Map Generation Settings")]
     [Serializable]
@@ -66,7 +67,14 @@ namespace OfficeMice.MapGeneration.Configuration
         public DebugSettings DebugSettings => _debugSettings;
         public QualitySettings QualitySettings => _qualitySettings;
         public bool AllowRuntimeModification => _allowRuntimeModification;
-        
+
+        // Helper method for map bounds
+        public RectInt GetMapBounds()
+        {
+            var size = _mapConfig.UseFixedSize ? _mapConfig.FixedSize : _mapConfig.MapSizeRange;
+            return new RectInt(0, 0, size.x, size.y);
+        }
+
         // Validation
         public ValidationResult Validate()
         {
@@ -236,12 +244,12 @@ namespace OfficeMice.MapGeneration.Configuration
     public class MapConfiguration
     {
         [Header("Size Settings")]
-        [SerializeField, Vector2IntRange] private Vector2Int _mapSizeRange = new Vector2Int(50, 100);
+        [SerializeField, Vector2IntRange(10, 200)] private Vector2Int _mapSizeRange = new Vector2Int(50, 100);
         [SerializeField] private bool _useFixedSize = false;
         [SerializeField] private Vector2Int _fixedSize = new Vector2Int(75, 75);
         
         [Header("Room Settings")]
-        [SerializeField, Vector2IntRange] private Vector2Int _roomSizeRange = new Vector2Int(5, 15);
+        [SerializeField, Vector2IntRange(3, 50)] private Vector2Int _roomSizeRange = new Vector2Int(5, 15);
         [SerializeField, Min(2)] private int _minRooms = 5;
         [SerializeField, Min(2)] private int _maxRooms = 20;
         [SerializeField, Range(0.1f, 1f)] private float _roomDensity = 0.6f;
@@ -251,16 +259,16 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField] private int _fixedSeed = 12345;
         [SerializeField] private bool _saveSeed = true;
         
-        public Vector2Int MapSizeRange => _mapSizeRange;
-        public bool UseFixedSize => _useFixedSize;
-        public Vector2Int FixedSize => _fixedSize;
-        public Vector2Int RoomSizeRange => _roomSizeRange;
-        public int MinRooms => _minRooms;
-        public int MaxRooms => _maxRooms;
-        public float RoomDensity => _roomDensity;
-        public bool UseRandomSeed => _useRandomSeed;
-        public int FixedSeed => _fixedSeed;
-        public bool SaveSeed => _saveSeed;
+        public Vector2Int MapSizeRange { get => _mapSizeRange; set => _mapSizeRange = value; }
+        public bool UseFixedSize { get => _useFixedSize; set => _useFixedSize = value; }
+        public Vector2Int FixedSize { get => _fixedSize; set => _fixedSize = value; }
+        public Vector2Int RoomSizeRange { get => _roomSizeRange; set => _roomSizeRange = value; }
+        public int MinRooms { get => _minRooms; set => _minRooms = value; }
+        public int MaxRooms { get => _maxRooms; set => _maxRooms = value; }
+        public float RoomDensity { get => _roomDensity; set => _roomDensity = value; }
+        public bool UseRandomSeed { get => _useRandomSeed; set => _useRandomSeed = value; }
+        public int FixedSeed { get => _fixedSeed; set => _fixedSeed = value; }
+        public bool SaveSeed { get => _saveSeed; set => _saveSeed = value; }
         
         public ValidationResult Validate()
         {
@@ -501,8 +509,8 @@ namespace OfficeMice.MapGeneration.Configuration
         public bool ValidateConnectivity => _validateConnectivity;
         public bool ValidateRoomSizes => _validateRoomSizes;
         public bool ValidateCorridorWidths => _validateCorridorWidths;
-        public bool RejectInvalidMaps => _rejectInvalidMaps;
-        public int MaxRetryAttempts => _maxRetryAttempts;
+        public bool RejectInvalidMaps { get => _rejectInvalidMaps; set => _rejectInvalidMaps = value; }
+        public int MaxRetryAttempts { get => _maxRetryAttempts; set => _maxRetryAttempts = value; }
         public bool LogValidationDetails => _logValidationDetails;
         public float MinWalkableRatio => _minWalkableRatio;
         public int MinRoomCount => _minRoomCount;
@@ -549,15 +557,15 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField, Min(1)] private int _lodLevels = 3;
         [SerializeField] private float _lodDistance = 50f;
         
-        public bool EnableMultithreading => _enableMultithreading;
-        public int GenerationTimeoutMs => _generationTimeoutMs;
-        public bool UseIncrementalGeneration => _useIncrementalGeneration;
-        public bool PoolObjects => _poolObjects;
-        public bool ReuseTilemaps => _reuseTilemaps;
-        public int MaxPoolSize => _maxPoolSize;
-        public bool EnableLOD => _enableLOD;
-        public int LODLevels => _lodLevels;
-        public float LODDistance => _lodDistance;
+        public bool EnableMultithreading { get => _enableMultithreading; set => _enableMultithreading = value; }
+        public int GenerationTimeoutMs { get => _generationTimeoutMs; set => _generationTimeoutMs = value; }
+        public bool UseIncrementalGeneration { get => _useIncrementalGeneration; set => _useIncrementalGeneration = value; }
+        public bool PoolObjects { get => _poolObjects; set => _poolObjects = value; }
+        public bool ReuseTilemaps { get => _reuseTilemaps; set => _reuseTilemaps = value; }
+        public int MaxPoolSize { get => _maxPoolSize; set => _maxPoolSize = value; }
+        public bool EnableLOD { get => _enableLOD; set => _enableLOD = value; }
+        public int LODLevels { get => _lodLevels; set => _lodLevels = value; }
+        public float LODDistance { get => _lodDistance; set => _lodDistance = value; }
         
         public ValidationResult Validate()
         {
@@ -644,15 +652,15 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField] private int _testSeed = 12345;
         [SerializeField] private bool _runValidationTests = true;
         
-        public bool ShowGizmos => _showGizmos;
-        public bool ShowRoomLabels => _showRoomLabels;
-        public bool ShowConnectivity => _showConnectivity;
-        public bool ColorizeRooms => _colorizeRooms;
-        public bool EnableLogging => _enableLogging;
-        public bool LogGenerationSteps => _logGenerationSteps;
+        public bool ShowGizmos { get => _showGizmos; set => _showGizmos = value; }
+        public bool ShowRoomLabels { get => _showRoomLabels; set => _showRoomLabels = value; }
+        public bool ShowConnectivity { get => _showConnectivity; set => _showConnectivity = value; }
+        public bool ColorizeRooms { get => _colorizeRooms; set => _colorizeRooms = value; }
+        public bool EnableLogging { get => _enableLogging; set => _enableLogging = value; }
+        public bool LogGenerationSteps { get => _logGenerationSteps; set => _logGenerationSteps = value; }
         public bool LogPerformanceMetrics => _logPerformanceMetrics;
         public bool LogValidationResults => _logValidationResults;
-        public bool EnableTestMode => _enableTestMode;
+        public bool EnableTestMode { get => _enableTestMode; set => _enableTestMode = value; }
         public int TestSeed => _testSeed;
         public bool RunValidationTests => _runValidationTests;
         
@@ -685,8 +693,8 @@ namespace OfficeMice.MapGeneration.Configuration
         [SerializeField] private bool _enableFrustumCulling = true;
         [SerializeField] private bool _batchTileOperations = true;
         
-        public GenerationQuality Quality => _quality;
-        public bool AdaptiveQuality => _adaptiveQuality;
+        public GenerationQuality Quality { get => _quality; set => _quality = value; }
+        public bool AdaptiveQuality { get => _adaptiveQuality; set => _adaptiveQuality = value; }
         public float QualityThreshold => _qualityThreshold;
         public float DecorationQuality => _decorationQuality;
         public float LightingQuality => _lightingQuality;
