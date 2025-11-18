@@ -21,6 +21,7 @@ namespace OfficeMice.MapGeneration.Content
         private readonly SpawnPointManager _spawnPointManager;
         private readonly SpawnPointWaveSpawnerIntegration _waveSpawnerIntegration;
         private readonly ResourceDistributor _resourceDistributor;
+        private readonly BiomeApplicator _biomeApplicator;
         private readonly IAssetLoader _assetLoader;
         private System.Random _random;
         private int _seed;
@@ -37,6 +38,7 @@ namespace OfficeMice.MapGeneration.Content
         public event Action<FurnitureData> OnFurniturePlaced;
         public event Action<SpawnPointData> OnSpawnPointPlaced;
         public event Action<ResourceData> OnResourcePlaced;
+        public event Action<BiomeConfiguration> OnBiomeApplied;
         public event Action<MapData, Exception> OnContentPopulationFailed;
 
         #endregion
@@ -53,6 +55,7 @@ namespace OfficeMice.MapGeneration.Content
             _spawnPointManager = new SpawnPointManager(spawnTableConfig, seed);
             _waveSpawnerIntegration = new SpawnPointWaveSpawnerIntegration(spawnTableConfig);
             _resourceDistributor = new ResourceDistributor(assetLoader, seed);
+            _biomeApplicator = new BiomeApplicator(assetLoader, seed);
             
             _placedFurniture = new List<FurnitureData>();
             _placedSpawnPoints = new List<SpawnPointData>();
@@ -72,6 +75,11 @@ namespace OfficeMice.MapGeneration.Content
             _resourceDistributor.OnResourcePlaced += (resource) => OnResourcePlaced?.Invoke(resource);
             _resourceDistributor.OnResourcePlacementFailed += (room, error) => 
                 OnContentPopulationFailed?.Invoke(null, new InvalidOperationException($"Resource placement failed in room {room.RoomID}: {error}"));
+
+            // Forward biome application events
+            _biomeApplicator.OnBiomeApplied += (biome) => OnBiomeApplied?.Invoke(biome);
+            _biomeApplicator.OnBiomeApplicationFailed += (biomeId, error) => 
+                OnContentPopulationFailed?.Invoke(null, new InvalidOperationException($"Biome application failed for {biomeId}: {error.Message}"));
         }
 
         #endregion
@@ -109,6 +117,13 @@ namespace OfficeMice.MapGeneration.Content
                 var resources = PlaceResources(map, biome, 1);
                 _placedResources.AddRange(resources);
 
+                // Apply biome theming
+                var biomeResult = ApplyBiome(map, biome);
+                if (!biomeResult.Success)
+                {
+                    throw new InvalidOperationException($"Biome application failed: {biomeResult.ErrorMessage}");
+                }
+
                 // Add content to map data (may need to extend MapData)
                 AddContentToMap(map);
             }
@@ -138,6 +153,12 @@ namespace OfficeMice.MapGeneration.Content
         public List<ResourceData> PlaceResources(MapData map, BiomeConfiguration biome, int difficulty)
         {
             return _resourceDistributor.DistributeResources(map, _placedFurniture, difficulty);
+        }
+
+        public BiomeApplicationResult ApplyBiome(MapData map, BiomeConfiguration biome, 
+            Dictionary<RoomClassification, BiomeConfiguration> roomTypeBiomes = null)
+        {
+            return _biomeApplicator.ApplyBiomeToMap(map, biome, roomTypeBiomes);
         }
 
         public ValidationResult ValidateContentPlacement(MapData map)
@@ -256,6 +277,7 @@ namespace OfficeMice.MapGeneration.Content
             _furniturePlacer.SetSeed(seed);
             _spawnPointManager.SetSeed(seed);
             _resourceDistributor.SetSeed(seed);
+            _biomeApplicator.SetSeed(seed);
         }
 
         /// <summary>

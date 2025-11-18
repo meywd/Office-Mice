@@ -31,7 +31,7 @@ development_status:
   3-2-furniture-placement: done
   3-3-spawn-points: done
   3-4-resource-distribution: done
-  3-5-biome-themes: drafted
+  3-5-biome-themes: done
   3-6-navmesh-generation: drafted
   
   # Epic 4: Performance & Production Tools
@@ -56,9 +56,9 @@ sprint_metrics:
   ready-for-dev: 0
   in-progress: 0
   review: 0
-   done: 15
+   done: 16
    blocked: 0
-   completion_percentage: 62%
+   completion_percentage: 67%
 
 # Notes
 notes:
@@ -95,4 +95,6 @@ notes:
     - Epic 3 Content & Asset Integration: 3/6 stories completed (50%)
     - Story 3.4: Resource Distribution System completed successfully
     - Epic 3 Content & Asset Integration: 4/6 stories completed (67%)
-    - Next story: 3-5-biome-themes (Biome Theme System)
+    - Story 3.5: Biome Theme System completed successfully
+    - Epic 3 Content & Asset Integration: 5/6 stories completed (83%)
+    - Next story: 3-6-navmesh-generation (NavMesh Generation)

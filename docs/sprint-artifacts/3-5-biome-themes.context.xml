@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>
+  <story-id>3-5-biome-themes</story-id>
+  <title>Biome Theme System</title>
+  <epic>3-content-asset-integration</epic>
+  <created>2025-11-17</created>
+  <last-updated>2025-11-17</updated>
+  
+  <summary>
+    Implements comprehensive biome theming system that applies visual themes, environmental effects, and atmospheric variations to generated maps. Supports designer-friendly biome creation and smooth biome transitions.
+  </summary>
+  
+  <acceptance-criteria>
+    <criteria id="AC1">
+      <given>Basic map structure and content are in place</given>
+      <when>Biome system is applied</when>
+      <then>BiomeConfiguration ScriptableObjects support multiple themes</then>
+    </criteria>
+    
+    <criteria id="AC2">
+      <given>BiomeConfiguration is defined</given>
+      <when>BiomeApplicator processes map</when>
+      <then>Biome-specific tilesets and furniture are applied correctly</then>
+    </criteria>
+    
+    <criteria id="AC3">
+      <given>Environmental effects are configured</given>
+      <when>Biome is applied to map</when>
+      <then>Environmental settings (lighting, fog) match biome characteristics</then>
+    </criteria>
+    
+    <criteria id="AC4">
+      <given>Multiple biomes exist in map</given>
+      <when>BiomeApplicator processes transitions</when>
+      <then>Biome transitions are handled smoothly where applicable</then>
+    </criteria>
+    
+    <criteria id="AC5">
+      <given>Designer has biome assets</given>
+      <when>Creating new biome</when>
+      <then>Designers can create new biomes in under 10 minutes</then>
+    </criteria>
+  </acceptance-criteria>
+  
+  <technical-requirements>
+    <requirement id="TR1">Implement BiomeApplicator class with theme switching logic</requirement>
+    <requirement id="TR2">Create biome configuration assets with visual and gameplay parameters</requirement>
+    <requirement id="TR3">Add environmental effect systems</requirement>
+    <requirement id="TR4">Design intuitive biome creation workflow for designers</requirement>
+    <requirement id="TR5">Support biome blending for transitions</requirement>
+    <requirement id="TR6">Integrate with existing MapContentPopulator</requirement>
+    <requirement id="TR7">Achieve performance targets: &lt;300ms biome application for 100-room maps</requirement>
+  </technical-requirements>
+  
+  <implementation-tasks>
+    <task id="T1" status="pending">Create BiomeApplicator class with core theme application logic</task>
+    <task id="T2" status="pending">Implement tileset switching and color palette application</task>
+    <task id="T3" status="pending">Add environmental effect system (lighting, particles, fog)</task>
+    <task id="T4" status="pending">Create biome transition and blending system</task>
+    <task id="T5" status="pending">Add furniture theming and material replacement</task>
+    <task id="T6" status="pending">Implement audio configuration and ambient sound system</task>
+    <task id="T7" status="pending">Create biome validation and testing framework</task>
+    <task id="T8" status="pending">Integrate with MapContentPopulator workflow</task>
+  </implementation-tasks>
+  
+  <dependencies>
+    <dependency story-id="3-4-resource-distribution">Resource Distribution System</dependency>
+    <dependency story-id="3-3-spawn-points">Spawn Point Generation System</dependency>
+    <dependency story-id="3-2-furniture-placement">Furniture Placement System</dependency>
+    <dependency story-id="3-1-asset-loading">Asset Loading and Management</dependency>
+  </dependencies>
+  
+  <biome-types-supported>
+    <biome-type name="Office" description="Standard office environment with fluorescent lighting">
+      <tileset primary="office_tiles" secondary="carpet_tiles"/>
+      <color-palette primary="#E8E8E8" secondary="#D0D0D0" accent="#4A90E2"/>
+      <environmental-effects>
+        <effect type="Light" intensity="1.2" color="#FFFFFF"/>
+        <effect type="AmbientSound" volume="0.3" sound="office_hum"/>
+      </environmental-effects>
+    </biome-type>
+    
+    <biome-type name="ServerRoom" description="Dark server room with computer equipment">
+      <tileset primary="server_tiles" secondary="cable_tiles"/>
+      <color-palette primary="#2C3E50" secondary="#34495E" accent="#3498DB"/>
+      <environmental-effects>
+        <effect type="Light" intensity="0.6" color="#00FFFF"/>
+        <effect type="Particles" type="Dust" intensity="0.8"/>
+        <effect type="AmbientSound" volume="0.5" sound="server_fans"/>
+      </environmental-effects>
+    </biome-type>
+    
+    <biome-type name="Cafeteria" description="Food service area with warm lighting">
+      <tileset primary="cafeteria_tiles" secondary="floor_tiles"/>
+      <color-palette primary="#F39C12" secondary="#E67E22" accent="#27AE60"/>
+      <environmental-effects>
+        <effect type="Light" intensity="1.0" color="#FFE4B5"/>
+        <effect type="AmbientSound" volume="0.4" sound="cafeteria"/>
+      </environmental-effects>
+    </biome-type>
+    
+    <biome-type name="Laboratory" description="Clean scientific environment">
+      <tileset primary="lab_tiles" secondary="steel_tiles"/>
+      <color-palette primary="#ECF0F1" secondary="#BDC3C7" accent="#9B59B6"/>
+      <environmental-effects>
+        <effect type="Light" intensity="1.5" color="#FFFFFF"/>
+        <effect type="Particles" type="Steam" intensity="0.3"/>
+        <effect type="AmbientSound" volume="0.2" sound="lab_equipment"/>
+      </environmental-effects>
+    </biome-type>
+    
+    <biome-type name="Basement" description="Dark, damp storage area">
+      <tileset primary="concrete_tiles" secondary="brick_tiles"/>
+      <color-palette primary="#7F8C8D" secondary="#95A5A6" accent="#2C3E50"/>
+      <environmental-effects>
+        <effect type="Light" intensity="0.4" color="#FFE4E1"/>
+        <effect type="Fog" density="0.6" color="#808080"/>
+        <effect type="Particles" type="Dust" intensity="0.7"/>
+        <effect type="AmbientSound" volume="0.3" sound="drip"/>
+      </environmental-effects>
+    </biome-type>
+  </biome-types-supported>
+  
+  <environmental-effects-supported>
+    <effect type="Light" properties="intensity,color,temperature">
+      <description>Ambient lighting configuration for biome atmosphere</description>
+      <performance-cost>low</performance-cost>
+    </effect>
+    
+    <effect type="Fog" properties="density,color,height,animation-speed">
+      <description>Atmospheric fog for depth and mood</description>
+      <performance-cost>medium</performance-cost>
+    </effect>
+    
+    <effect type="Particles" properties="type,intensity,frequency,size,color">
+      <description>Particle systems for dust, steam, rain, snow</description>
+      <performance-cost>medium</performance-cost>
+    </effect>
+    
+    <effect type="AmbientSound" properties="volume,sound-clips,spatial-blend">
+      <description>Background audio for biome atmosphere</description>
+      <performance-cost>low</performance-cost>
+    </effect>
+    
+    <effect type="PostProcessing" properties="bloom,contrast,color-grading,vignette">
+      <description>Visual post-processing effects</description>
+      <performance-cost>high</performance-cost>
+    </effect>
+  </environmental-effects-supported>
+  
+  <performance-targets>
+    <target metric="biome-application-time" unit="ms" max="300" for-map-size="100-rooms">Complete biome theming application</target>
+    <target metric="tileset-switching-time" unit="ms" max="100" for-map-size="100-rooms">Tileset replacement and recoloring</target>
+    <target metric="environmental-effects-setup" unit="ms" max="150" for-map-size="100-rooms">Lighting, particles, and audio initialization</target>
+    <target metric="memory-usage" unit="MB" max="10" for-map-size="100-rooms">Biome system memory overhead</target>
+    <target metric="designer-creation-time" unit="minutes" max="10" for-new-biome">Time to create new biome asset</target>
+  </performance-targets>
+  
+  <integration-points>
+    <point component="MapContentPopulator" method="ApplyBiome" description="Apply biome after content population"/>
+    <point component="TilemapRenderer" method="SwitchTileset" description="Replace tiles with biome-specific versions"/>
+    <point component="FurniturePlacer" method="ApplyBiomeMaterials" description="Apply biome materials to furniture"/>
+    <point component="LightingSystem" method="ConfigureBiomeLighting" description="Set up biome-specific lighting"/>
+    <point component="AudioManager" method="PlayBiomeAmbient" description="Play biome-specific ambient sounds"/>
+  </integration-points>
+  
+  <test-requirements>
+    <test type="unit">BiomeApplicator theme application logic</test>
+    <test type="unit">Tileset switching and color palette application</test>
+    <test type="unit">Environmental effects configuration and validation</test>
+    <test type="unit">Biome transition and blending algorithms</test>
+    <test type="integration">MapContentPopulator biome integration</test>
+    <test type="integration">TilemapRenderer biome theming</test>
+    <test type="performance">Biome application time benchmarks</test>
+    <test type="validation">BiomeConfiguration validation and error handling</test>
+  </test-requirements>
+</context>
